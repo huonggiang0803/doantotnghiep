@@ -34,7 +34,6 @@ import lombok.RequiredArgsConstructor;
 public class RegisterUserController {
     @Autowired
     private UserService us;
-    @Autowired
 
     @GetMapping("/user")
     public String showRegisterForm() {
