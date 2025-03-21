@@ -53,6 +53,12 @@ public class UserServiceImplement implements UserService{
             log.warn("Tên đăng nhập đã tồn tại: {}", userRequestDTO.getUserName());
             throw new IllegalArgumentException("Tên đăng nhập đã tồn tại!");
         }
+
+        if (userRepository.existsByEmail(userRequestDTO.getEmail())) {
+            log.warn("Email đã được sử dụng: {}", userRequestDTO.getUserName());
+            throw new IllegalArgumentException("Email đã được sử dụng!");
+        }
+
         UserType requestedRole = UserType.valueOf(userRequestDTO.getType().toUpperCase());
         if (requestedRole == UserType.ADMIN ) {
             log.warn("Người dùng không có quyền tạo ADMIN.");
