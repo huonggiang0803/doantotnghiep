@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,9 +29,9 @@ import com.example.doan.repository.ProductRepository;
 import com.example.doan.repository.ProductVariantReposi;
 import com.example.doan.status.ProductStatus;
 @Service
+@RequiredArgsConstructor
 public class ProductImple implements ProductService{
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
@@ -202,6 +204,12 @@ public Product getProductById(long id) {
             List<Product> products = productRepository.findFilteredProducts(size, color, minPrice, maxPrice);
             return converToDTOs(products);
         }
+
+    @Override
+    public List<String> getAllBrands() {
+        return productRepository.getAllDistinctBrands();
+    }
+
     public List<ProductDTO> converToDTOs(List<Product> products){
         List<ProductDTO> productDTOs = new ArrayList<>();
     for (Product product : products) {

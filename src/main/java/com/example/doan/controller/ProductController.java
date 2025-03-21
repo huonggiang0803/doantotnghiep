@@ -70,4 +70,9 @@ public class ProductController {
         Page<Product> page = productService.findPaginated(pageNo, pageSize, sortField, sortDir);
         return ResponseEntity.ok(page);
     }
+
+    @GetMapping("/brands")
+    public List<String> getAllBrands() {
+        return productService.getAllBrands();
+    }
 }

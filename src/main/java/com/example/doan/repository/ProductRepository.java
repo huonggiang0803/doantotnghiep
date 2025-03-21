@@ -30,4 +30,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice
     );
+
+    @Query(value = "SELECT DISTINCT p.brand FROM Product p WHERE p.brand IS NOT NULL", nativeQuery = true)
+    List<String> getAllDistinctBrands();
 }
