@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.doan.dto.ProductDTO;
 import com.example.doan.entity.Product;
+import com.example.doan.entity.ProductImage;
 import com.example.doan.service.ProductService;
 
 @RestController
@@ -40,14 +41,12 @@ public class ProductController {
 ) {
         Long productId = productService.saveProduct(productDTO, imageFile);
         return ResponseEntity.ok("Sản phẩm đã được lưu với ID: " + productId);
-}
-    
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable long id) {
         Product product = productService.getProductById(id);
         return ResponseEntity.ok(product);
     }
-
     @PutMapping("/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable Long id,
                                             @ModelAttribute ProductDTO productDTO,
@@ -70,4 +69,12 @@ public class ProductController {
         Page<Product> page = productService.findPaginated(pageNo, pageSize, sortField, sortDir);
         return ResponseEntity.ok(page);
     }
+    @GetMapping("/{id}/images")
+    public ResponseEntity<List<String>> getProductImages(@PathVariable long id) {
+    List<ProductImage> images = productService.getProductImages(id);
+    List<String> imageUrls = images.stream()
+                                   .map(ProductImage::getFileName)
+                                   .toList();
+    return ResponseEntity.ok(imageUrls);
+}
 }

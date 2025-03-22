@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.doan.dto.ProductDTO;
 import com.example.doan.entity.Product;
+import com.example.doan.entity.ProductImage;
 
 public interface ProductService {
     public Long saveProduct(ProductDTO productDTO, MultipartFile imageFile);
@@ -16,4 +17,5 @@ public interface ProductService {
     Page<Product> findPaginated(int pageNo, int pageSize, String sortFileld, String sortDir);
     public void updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> photos);
     List<ProductDTO> geProductDTOs( String size, String color, Double minPrice, Double maxPrice);
+    List<ProductImage> getProductImages(long productId);
 }

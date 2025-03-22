@@ -241,6 +241,9 @@ productDTOs.add(productDTO);
 return productDTOs;
 
     }
-    
+    @Override
+    public List<ProductImage> getProductImages(long productId) {
+        return productImageRepository.findByProductId(productId);
+}
     
 }
