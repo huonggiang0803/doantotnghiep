@@ -33,6 +33,7 @@ public class WebSecurityConfig {
             .requestMatchers("/api/products/delete/**").hasRole("ADMIN")
             .requestMatchers("/api/users/all").hasRole("ADMIN")
             .requestMatchers("/api/orders/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers("/product-photo/**").permitAll() 
             .anyRequest().authenticated()
 );
         return http.build();
