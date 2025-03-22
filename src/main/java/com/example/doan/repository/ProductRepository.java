@@ -19,17 +19,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findById(Long id);
 
     @Query("SELECT DISTINCT p FROM Product p " +
-           "JOIN p.variants v " +
-           "WHERE (:size IS NULL OR v.size = :size) " +   // Nếu size không null, tìm sản phẩm có size đó
-           "AND (:color IS NULL OR v.color = :color) " +  // Nếu color không null, tìm sản phẩm có màu đó
-           "AND (:minPrice IS NULL OR v.price >= :minPrice) " + // Nếu minPrice không null, tìm sản phẩm có giá >= minPrice
-           "AND (:maxPrice IS NULL OR v.price <= :maxPrice)")   // Nếu maxPrice không null, tìm sản phẩm có giá <= maxPrice
+            "JOIN p.variants v " +
+            "WHERE (:size IS NULL OR v.size = :size) " +
+            "AND (:color IS NULL OR v.color = :color) " +
+            "AND (:minPrice IS NULL OR v.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR v.price <= :maxPrice) " +
+            "AND (LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%')))")  // Tìm theo từ khóa
     List<Product> findFilteredProducts(
             @Param("size") String size,
             @Param("color") String color,
             @Param("minPrice") Double minPrice,
-            @Param("maxPrice") Double maxPrice
-    );
+            @Param("maxPrice") Double maxPrice,
+            @Param("keyword") String keyword);  // Thêm tham số keyword
+
 
     @Query(value = "SELECT DISTINCT p.brand FROM Product p WHERE p.brand IS NOT NULL", nativeQuery = true)
     List<String> getAllDistinctBrands();

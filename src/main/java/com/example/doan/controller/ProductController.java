@@ -25,14 +25,18 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
     @GetMapping("/filter")
-    public ResponseEntity<List<ProductDTO>> filterProduct(@RequestParam(required = false) String size,
-    @RequestParam(required = false) String color,
-    @RequestParam(required = false) Double minPrice,
-    @RequestParam(required = false) Double maxPrice
-    ){
-        List<ProductDTO> filteredProducts = productService.geProductDTOs(size, color, minPrice, maxPrice);
+    public ResponseEntity<List<ProductDTO>> filterProduct(
+            @RequestParam(required = false) String size,
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String keyword // Thêm tham số keyword
+    ) {
+        // Gọi service với tham số keyword
+        List<ProductDTO> filteredProducts = productService.geProductDTOs(size, color, minPrice, maxPrice, keyword);
         return ResponseEntity.ok(filteredProducts);
     }
+
     @PostMapping("save")
     public ResponseEntity<String> createProduct(
     @ModelAttribute ProductDTO productDTO,

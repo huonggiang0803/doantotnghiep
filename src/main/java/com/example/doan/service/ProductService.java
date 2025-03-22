@@ -15,6 +15,6 @@ public interface ProductService {
     List<Product> getAllProduct(String keyword);
     Page<Product> findPaginated(int pageNo, int pageSize, String sortFileld, String sortDir);
     public void updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> photos);
-    List<ProductDTO> geProductDTOs( String size, String color, Double minPrice, Double maxPrice);
+    List<ProductDTO> geProductDTOs( String size, String color, Double minPrice, Double maxPrice, String keyword);
     List<String> getAllBrands();
 }

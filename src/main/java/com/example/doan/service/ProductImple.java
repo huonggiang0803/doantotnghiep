@@ -199,56 +199,55 @@ public Product getProductById(long id) {
                 productImageRepository.saveAll(newImages);
         }
     }
-        @Override
-        public List<ProductDTO> geProductDTOs(String size, String color, Double minPrice, Double maxPrice) {
-            List<Product> products = productRepository.findFilteredProducts(size, color, minPrice, maxPrice);
-            return converToDTOs(products);
-        }
+
+    @Override
+    public List<ProductDTO> geProductDTOs(String size, String color, Double minPrice, Double maxPrice, String keyword) {
+        List<Product> products = productRepository.findFilteredProducts(size, color, minPrice, maxPrice, keyword);
+        return convertToDTOs(products);
+    }
 
     @Override
     public List<String> getAllBrands() {
         return productRepository.getAllDistinctBrands();
     }
 
-    public List<ProductDTO> converToDTOs(List<Product> products){
+    public List<ProductDTO> convertToDTOs(List<Product> products) {
         List<ProductDTO> productDTOs = new ArrayList<>();
-    for (Product product : products) {
-        List<ProductImage> images = productImageRepository.findByProductId(product.getId());
-        List<String> imageUrls = new ArrayList<>();
-        
-        for (ProductImage image : images) {
-            imageUrls.add(image.getFileName()); 
-        }
-        List<ProductVariantDTO> variantDTOs = new ArrayList<>();
-        for (ProductVariant variant : product.getVariants()) {
-            ProductVariantDTO variantDTO = ProductVariantDTO.builder()
-                    .color(variant.getColor())
-                    .size(variant.getSize())
-                    .material(variant.getMaterial())
-                    .price(variant.getPrice())
-                    .discountPercentage(variant.getDiscountPercentage())
-                    .promotionalPrice(variant.getPromotionalPrice())
+        for (Product product : products) {
+            List<ProductImage> images = productImageRepository.findByProductId(product.getId());
+            List<String> imageUrls = new ArrayList<>();
+
+            for (ProductImage image : images) {
+                imageUrls.add(image.getFileName());
+            }
+
+            List<ProductVariantDTO> variantDTOs = new ArrayList<>();
+            for (ProductVariant variant : product.getVariants()) {
+                ProductVariantDTO variantDTO = ProductVariantDTO.builder()
+                        .color(variant.getColor())
+                        .size(variant.getSize())
+                        .material(variant.getMaterial())
+                        .price(variant.getPrice())
+                        .discountPercentage(variant.getDiscountPercentage())
+                        .promotionalPrice(variant.getPromotionalPrice())
+                        .build();
+                variantDTOs.add(variantDTO);
+            }
+
+            ProductDTO productDTO = ProductDTO.builder()
+                    .id(product.getId())
+                    .productName(product.getProductName())
+                    .describe(product.getDescribe())
+                    .categoryId(product.getCategory().getId())
+                    .brand(product.getBrand())
+                    .rating(product.getRating())
+                    .reviewCount(product.getReviewCount())
+                    .imageUrl(imageUrls.isEmpty() ? null : imageUrls.get(0))  // Lấy ảnh đầu tiên, nếu có
+                    .variants(variantDTOs)
                     .build();
-            variantDTOs.add(variantDTO);
+
+            productDTOs.add(productDTO);
         }
-
-        ProductDTO productDTO = ProductDTO.builder()
-        .id(product.getId())
-        .productName(product.getProductName())
-        .describe(product.getDescribe())
-        .categoryId(product.getCategory().getId())
-        .brand(product.getBrand())
-        .rating(product.getRating())
-        .reviewCount(product.getReviewCount())
-        .imageUrl(imageUrls.isEmpty() ? null : imageUrls.get(0))
-        .variants(variantDTOs) 
-        .build();
-
-productDTOs.add(productDTO);
-}
-return productDTOs;
-
+        return productDTOs;
     }
-    
-    
 }
