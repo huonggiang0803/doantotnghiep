@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import com.example.doan.status.OrderEnum;
 import com.example.doan.status.PaymentStatus;
+import com.example.doan.status.ShipingEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -40,11 +41,14 @@ public class Orders extends AbstractEntity{
     @JoinColumn(name = "shipping_id") 
     private InforShipping inforShipping;
 
-    @Column(name = "shipping_method")
-    private String shippingMethod;
+    @Column(name = "shipping_fee")
+    private Double shippingFee; 
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "shipping_method")
+    private ShipingEnum shippingMethod;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "paymentStatus")
     private PaymentStatus paymentStatus;
 
@@ -52,7 +56,6 @@ public class Orders extends AbstractEntity{
     private String paymentMethod;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "status")
     private OrderEnum orderEnum;
 
@@ -64,6 +67,20 @@ public class Orders extends AbstractEntity{
         for (OrderItem item : items) {
             total += item.getSubTotal();
         }
-        this.totalPrice = total;
+        this.totalPrice = total + calculateShippingFee();
+        this.shippingFee = calculateShippingFee();
+    }
+    public Double calculateShippingFee() {
+        if (this.shippingMethod == null) return 30000.0;
+        switch (this.shippingMethod) {
+            case STANDARD:
+                return 30000.0; 
+            case EXPRESS:
+                return 50000.0; 
+            case SAME_DAY:
+                return 70000.0; 
+            default:
+                return 0.0;
+        }
     }
 }

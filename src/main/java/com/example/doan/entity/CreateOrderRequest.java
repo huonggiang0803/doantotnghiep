@@ -9,4 +9,5 @@ public class CreateOrderRequest {
     private Long cartId;
     private Long shippingId;
     private String paymentMethod;
+    private String shippingMethod;
 }

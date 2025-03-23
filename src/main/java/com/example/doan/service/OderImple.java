@@ -23,8 +23,11 @@ import com.example.doan.repository.InforShipRepository;
 import com.example.doan.repository.OrderRepository;
 import com.example.doan.repository.ProductRepository;
 import com.example.doan.repository.ProductVariantReposi;
+import com.example.doan.repository.UserRepository;
 import com.example.doan.status.OrderEnum;
 import com.example.doan.status.PaymentStatus;
+import com.example.doan.status.ShipingEnum;
+
 import jakarta.transaction.Transactional;
 @Service
 public class OderImple implements OrderService{
@@ -47,9 +50,11 @@ public class OderImple implements OrderService{
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private UserRepository userRepository;
     @Override
     @Transactional
-    public OrderDTO createOrderFromCart(Long cartId, Long shippingId, String paymentMethod) {
+    public OrderDTO createOrderFromCart(Long cartId, Long shippingId, String paymentMethod, String shippingMethod) {
             Cart cart = cartRepository.findById(cartId)
             .orElseThrow(() -> new RuntimeException("Cart not found"));
 
@@ -64,13 +69,20 @@ public class OderImple implements OrderService{
         throw new RuntimeException("Cart is empty");
     }
     InforShipping shippingAddress = inforShipRepository.findById(shippingId)
-        .orElseThrow(() -> new RuntimeException("SKhông tìm thất địa chỉ: " + shippingId));
-
+        .orElseThrow(() -> new RuntimeException("Không tìm thất địa chỉ: " + shippingId));
+        ShipingEnum shippingEnum;
+        try {
+            shippingEnum = ShipingEnum.valueOf(shippingMethod.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Phương thức vận chuyển không hợp lệ: " + shippingMethod);
+        }
+    
         Orders order = Orders.builder()
                 .userId(user)
                 .inforShipping(shippingAddress)
                 .paymentMethod(paymentMethod)
                 .paymentStatus(PaymentStatus.UNPAID)
+                .shippingMethod(shippingEnum) 
                 .orderEnum(OrderEnum.PENDING)
                 .items(new ArrayList<>())
                 .totalPrice(0.0)
@@ -104,7 +116,9 @@ public class OderImple implements OrderService{
                     // productRepository.save(product);
                     productVariantReposi.save(productVariant);
                 }
-                order.setTotalPrice(total);
+                double shippingFee = order.calculateShippingFee();
+                order.setTotalPrice(total + shippingFee);
+                order.setShippingFee(shippingFee);
                 orderRepository.save(order);
                         cartItemRepository.deleteAll(cartItems);
         
@@ -115,7 +129,8 @@ public class OderImple implements OrderService{
         dto.setId(order.getId());
         dto.setCustomerId(order.getUserId().getId());
         dto.setTotalPrice(order.getTotalPrice());
-        
+        dto.setShippingFee(order.getShippingFee()); 
+        dto.setShippingMethod(order.getShippingMethod()); 
         if (order.getInforShipping() != null) {
             dto.setShippingId(order.getInforShipping().getId());
             dto.setSetShippingAddress(order.getInforShipping().getAddress());
@@ -139,6 +154,14 @@ public class OderImple implements OrderService{
 
         dto.setOrderItems(orderItemDTOs);
         return dto;
+    }
+    @Override
+    public List<OrderDTO> getOrderHistoryByUser(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + userId));
+
+        List<Orders> orders = orderRepository.findByUserId(user);
+        return orders.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 }
   
