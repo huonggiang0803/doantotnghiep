@@ -29,12 +29,16 @@ public class CartItem extends AbstractEntity{
 
     private String img;
 
+    // public void calculateSubTotal() {
+    //     if (productVariant != null) {
+    //         double finalPrice = productVariant.getFinalPrice();
+    //         this.subTotal = finalPrice * quantity;
+    //     } else {
+    //         this.subTotal = price * quantity; 
+    //     }
+    // }
     public void calculateSubTotal() {
-        if (productVariant != null) {
-            double finalPrice = productVariant.getFinalPrice();
-            this.subTotal = finalPrice * quantity;
-        } else {
-            this.subTotal = price * quantity; 
-        }
-    }
+        double finalPrice = (price != null) ? price : productVariant.getPromotionalPrice();
+        this.subTotal = finalPrice * quantity;
+    }    
 }

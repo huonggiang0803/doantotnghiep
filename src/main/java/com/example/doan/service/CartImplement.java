@@ -47,10 +47,8 @@ public class CartImplement implements CartService {
        if (productVariant == null) {
         throw new RuntimeException("ProductVariant không hợp lệ!");
     }
-
-
     if (price == null) {
-        price = productVariant.getFinalPrice();
+        price = productVariant.getPromotionalPrice();
     } 
     List<Cart> carts = cartRepository.findByUserId(userId); 
     if (carts.isEmpty()) {
@@ -93,6 +91,7 @@ public class CartImplement implements CartService {
     }
 
     public static CartDTO save(Cart cart) {
+        
         List<CartItemDTO> itemDTOs = new ArrayList<>();
         if (cart.getItems() != null) { 
             for (CartItem item : cart.getItems()) {
@@ -123,7 +122,7 @@ public class CartImplement implements CartService {
         return CartItemDTO.builder()
             .productVariantId(item.getProductVariant().getProduct().getId()) 
             .nameProduct(item.getProductVariant().getProduct().getProductName()) 
-            .price(item.getProductVariant().getFinalPrice()) 
+            .price(item.getPrice()) 
             .quantity(item.getQuantity())
             .subTotal(item.getSubTotal())
             .imageUrl(image)
