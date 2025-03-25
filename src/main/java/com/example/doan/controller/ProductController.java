@@ -76,5 +76,13 @@ public class ProductController {
                                    .map(ProductImage::getFileName)
                                    .toList();
     return ResponseEntity.ok(imageUrls);
-}
+    }
+    @PutMapping("/{id}/add-images")
+    public ResponseEntity<String> addImagesToProduct(
+            @PathVariable Long id,
+            @RequestParam("photos") List<MultipartFile> imageFiles) {
+
+        productService.addImagesToProduct(id, imageFiles);
+        return ResponseEntity.ok("Ảnh đã được thêm vào sản phẩm ID: " + id);
+    }
 }

@@ -63,7 +63,7 @@ public class ProductImple implements ProductService{
         //    product.updateStatus();
             product = productRepository.save(product);
 
-             List<ProductVariant> variants = new ArrayList<>();
+            List<ProductVariant> variants = new ArrayList<>();
             for (ProductVariantDTO variantDTO : productDTO.getVariants()) {
              ProductVariant variant = ProductVariant.builder()
                 .product(product)
@@ -245,5 +245,20 @@ return productDTOs;
     public List<ProductImage> getProductImages(long productId) {
         return productImageRepository.findByProductId(productId);
 }
+    @Override
+    public void addImagesToProduct(Long productId, List<MultipartFile> imageFiles) {
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
+
+        List<ProductImage> productImages = new ArrayList<>();
+        for (MultipartFile file : imageFiles) {
+            String fileName = file.getOriginalFilename();
+            ProductImage image = new ProductImage();
+            image.setFileName(fileName);
+            image.setProduct(product);
+            productImages.add(image);
+        }
+        productImageRepository.saveAll(productImages);
+    }
     
 }
