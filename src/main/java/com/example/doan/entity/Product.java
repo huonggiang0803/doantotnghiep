@@ -6,8 +6,6 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import com.example.doan.status.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity

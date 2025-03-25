@@ -1,4 +1,5 @@
 package com.example.doan.dto;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -41,5 +42,5 @@ public class ProductDTO {
     @Min(value = 0, message = "Số lượng đánh giá không thể nhỏ hơn 0")
     private Integer reviewCount;
 
-    private List<ProductVariantDTO> variants;
+    private List<ProductVariantDTO> variants = new ArrayList<>();;
 }

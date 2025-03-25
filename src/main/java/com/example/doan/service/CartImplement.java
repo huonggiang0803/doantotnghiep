@@ -52,14 +52,18 @@ public class CartImplement implements CartService {
     if (price == null) {
         price = productVariant.getFinalPrice();
     } 
-        Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> {
-            Cart newCart = new Cart();
-            newCart.setUser(user);
-            newCart.setTotalPrice(0.0);
-            newCart.setItems(new ArrayList<>());
-            return newCart;
-        });
-        
+    List<Cart> carts = cartRepository.findByUserId(userId); 
+    if (carts.isEmpty()) {
+        Cart newCart = new Cart();
+        newCart.setUser(user);
+        newCart.setTotalPrice(0.0);
+        newCart.setItems(new ArrayList<>());
+    }
+    else if (carts.size() > 1) {
+        throw new RuntimeException("Lỗi dữ liệu: Một user có nhiều giỏ hàng!");
+    }
+    Cart cart = carts.get(0);
+
         Optional<CartItem> eOptional = cart.getItems().stream()
         .filter(item -> item.getProductVariant() != null && item.getProductVariant().getId().equals(productVariantId))
         .findFirst();    
