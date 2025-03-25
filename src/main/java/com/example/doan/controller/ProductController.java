@@ -56,9 +56,10 @@ public class ProductController {
     }
     @GetMapping("/{id}/sp")
     public ResponseEntity<List<Product>> getAllCategory(@PathVariable Long id) {
-        List<Product> products = categoryService.getProductsByCategory(id);
+        List<Product> products = categoryService.productCategory(id);
         return ResponseEntity.ok(products);
     }
+    
     @PutMapping("/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable Long id,
                                             @ModelAttribute ProductDTO productDTO,
