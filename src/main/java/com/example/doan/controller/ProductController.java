@@ -1,9 +1,13 @@
 package com.example.doan.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.doan.dto.ProductDTO;
 import com.example.doan.entity.Product;
 import com.example.doan.entity.ProductImage;
+import com.example.doan.service.CategoryService;
 import com.example.doan.service.ProductService;
 
 @RestController
@@ -19,6 +24,8 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private CategoryService categoryService;
 
     @GetMapping("/")
     public ResponseEntity<List<Product>> getAllProducts(@RequestParam(value = "keyword", required = false) String keyword) {
@@ -47,6 +54,11 @@ public class ProductController {
         Product product = productService.getProductById(id);
         return ResponseEntity.ok(product);
     }
+    @GetMapping("/{id}/sp")
+    public ResponseEntity<List<Product>> getAllCategory(@PathVariable Long id) {
+        List<Product> products = categoryService.getProductsByCategory(id);
+        return ResponseEntity.ok(products);
+    }
     @PutMapping("/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable Long id,
                                             @ModelAttribute ProductDTO productDTO,
@@ -60,15 +72,15 @@ public class ProductController {
         productService.deleteProductByID(id);
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("/page/{pageNo}")
-    public ResponseEntity<Page<Product>> getPaginatedProducts(
-            @PathVariable int pageNo,
-            @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDir) {
-        int pageSize = 5;
-        Page<Product> page = productService.findPaginated(pageNo, pageSize, sortField, sortDir);
-        return ResponseEntity.ok(page);
-    }
+    // @GetMapping("/page/{pageNo}")
+    // public ResponseEntity<Page<Product>> getPaginatedProducts(
+    //         @PathVariable int pageNo,
+    //         @RequestParam(defaultValue = "id") String sortField,
+    //         @RequestParam(defaultValue = "asc") String sortDir) {
+    //     int pageSize = 5;
+    //     Page<Product> page = productService.findPaginated(pageNo, pageSize, sortField, sortDir);
+    //     return ResponseEntity.ok(page);
+    // }
     @GetMapping("/{id}/images")
     public ResponseEntity<List<String>> getProductImages(@PathVariable long id) {
     List<ProductImage> images = productService.getProductImages(id);
@@ -83,6 +95,18 @@ public class ProductController {
             @RequestParam("photos") List<MultipartFile> imageFiles) {
 
         productService.addImagesToProduct(id, imageFiles);
-        return ResponseEntity.ok("Ảnh đã được thêm vào sản phẩm ID: " + id);
+        return ResponseEntity.ok("Ảnh đã được thêm vào sản phẩm id: " + id);
+    }
+    @GetMapping("/page")
+    public ResponseEntity<Map<String,Object>> paginate(@RequestParam int p) {
+        Pageable pageable = PageRequest.of(p, 3); 
+        Page<Product> page = productService.findAll(pageable); 
+        Map<String, Object> listPage = new HashMap<>();
+            listPage.put("totalPages", page.getTotalPages());
+            listPage.put("totalElements", page.getTotalElements());
+            listPage.put("numberOfElements", page.getNumberOfElements());
+            listPage.put("products", page.getContent());
+        return ResponseEntity.ok(listPage); 
+        
     }
 }

@@ -3,6 +3,7 @@ package com.example.doan.service;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.doan.dto.ProductDTO;
@@ -19,4 +20,5 @@ public interface ProductService {
     List<ProductDTO> geProductDTOs( String size, String color, Double minPrice, Double maxPrice);
     List<ProductImage> getProductImages(long productId);
     void addImagesToProduct(Long productId, List<MultipartFile> imageFiles) ;
+    public Page<Product> findAll(Pageable pageable) ;
 }

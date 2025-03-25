@@ -260,5 +260,9 @@ return productDTOs;
         }
         productImageRepository.saveAll(productImages);
     }
+    @Override
+    public Page<Product> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable);
+    }
     
 }
