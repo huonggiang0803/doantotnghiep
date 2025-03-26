@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.doan.dto.PageDTO;
 import com.example.doan.dto.ProductDTO;
 import com.example.doan.entity.Product;
 import com.example.doan.entity.ProductImage;
@@ -59,7 +60,7 @@ public class ProductController {
         List<Product> products = categoryService.productCategory(id);
         return ResponseEntity.ok(products);
     }
-    
+
     @PutMapping("/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable Long id,
                                             @ModelAttribute ProductDTO productDTO,
@@ -99,8 +100,10 @@ public class ProductController {
         return ResponseEntity.ok("Ảnh đã được thêm vào sản phẩm id: " + id);
     }
     @GetMapping("/page")
-    public ResponseEntity<Map<String,Object>> paginate(@RequestParam int p) {
-        Pageable pageable = PageRequest.of(p, 3); 
+    public ResponseEntity<Map<String,Object>> paginate(@RequestBody PageDTO rq) {
+        int p = rq.getPage();
+        int size = rq.getSize();
+        Pageable pageable = PageRequest.of(p, size); 
         Page<Product> page = productService.findAll(pageable); 
         Map<String, Object> listPage = new HashMap<>();
             listPage.put("totalPages", page.getTotalPages());
