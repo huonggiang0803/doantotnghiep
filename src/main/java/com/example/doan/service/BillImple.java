@@ -52,6 +52,7 @@ public class BillImple implements BillService {
             billItem.setProductVariant(orderItem.getProduct());
             billItem.setQuantity(orderItem.getQuantity());
             billItem.setPrice(orderItem.getPrice());
+            bill.setShippingFee(order.getShippingFee()); 
             billItem.setTotalPrice(orderItem.getSubTotal());
             billItemRepository.save(billItem);
         }

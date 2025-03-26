@@ -37,7 +37,7 @@ public class Bill extends AbstractEntity{
 
     private double totalAmount;
     private String paymentMethod;
-    
+    private double shippingFee; 
     private String status;
 
 }

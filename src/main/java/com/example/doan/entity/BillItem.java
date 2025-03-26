@@ -34,6 +34,6 @@ public class BillItem extends AbstractEntity{
     @PrePersist
     @PreUpdate
     public void calculateTotalPrice() {
-        this.totalPrice = this.quantity * this.price;
+        this.totalPrice = (this.quantity * this.price)+bill.getShippingFee();
     }
 }

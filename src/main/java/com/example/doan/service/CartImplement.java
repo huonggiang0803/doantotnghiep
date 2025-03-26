@@ -59,6 +59,8 @@ public class CartImplement implements CartService {
         newCart.setUser(user);
         newCart.setTotalPrice(0.0);
         newCart.setItems(new ArrayList<>());
+        newCart = cartRepository.save(newCart); // Lưu vào database
+        carts.add(newCart);//s
     }
     else if (carts.size() > 1) {
         throw new RuntimeException("Lỗi dữ liệu: Một user có nhiều giỏ hàng!");
@@ -87,6 +89,7 @@ public class CartImplement implements CartService {
                     .img(img)
                     .build();
             newItem.calculateSubTotal();
+            cartItemRepository.save(newItem);   //ư
             cart.getItems().add(newItem);
         }
 

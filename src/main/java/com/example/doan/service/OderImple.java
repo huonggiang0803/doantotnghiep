@@ -25,6 +25,8 @@ import com.example.doan.repository.OrderRepository;
 import com.example.doan.repository.ProductRepository;
 import com.example.doan.repository.ProductVariantReposi;
 import com.example.doan.repository.UserRepository;
+import com.example.doan.status.OrderEnum;
+import com.example.doan.status.PaymentStatus;
 import com.example.doan.status.ShipingEnum;
 
 import jakarta.transaction.Transactional;
@@ -90,6 +92,9 @@ public class OderImple implements OrderService{
                 .shippingMethod(ShipingEnum.valueOf(shippingMethod.toUpperCase()))
                 .items(new ArrayList<>())
                 .totalPrice(0.0)
+                .shippingFee(30000.0)
+                .orderEnum(OrderEnum.PENDING) 
+                .paymentStatus(PaymentStatus.UNPAID)
                 .build();
 
         order = orderRepository.save(order);
@@ -116,8 +121,8 @@ public class OderImple implements OrderService{
             productVariant.setStock(productVariant.getStock() - cartItem.getQuantity());
             productVariantReposi.save(productVariant);
         }
-
         order.setTotalPrice(total + order.calculateShippingFee());
+        order.setShippingFee(order.calculateShippingFee());
         cartItemRepository.deleteAll(cartItems);
         cartRepository.delete(cart);
 
