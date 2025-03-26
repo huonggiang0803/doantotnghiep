@@ -38,6 +38,6 @@ public class EmailService {
         helper.addAttachment("HoaDon.pdf", new ByteArrayResource(pdfData));
 
         javaMailSender.send(message);
-        System.out.println("✅ Email hóa đơn đã gửi thành công tới: " + to);
+        System.out.println("Email hóa đơn đã gửi thành công tới: " + to);
     }
 }
