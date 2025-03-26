@@ -39,7 +39,7 @@ public class RegisterUserController {
     public String showRegisterForm() {
         return "register"; 
     }
-    @GetMapping("/all")
+    @GetMapping("/getAllUsers")
     public ResponseEntity<List<UserEntity>> getAllUsers(@AuthenticationPrincipal UserEntity currentUser) {
     if (currentUser == null || currentUser.getType() != UserType.ADMIN) {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền xem danh sách người dùng!");
@@ -48,7 +48,7 @@ public class RegisterUserController {
     return ResponseEntity.ok(users);
 }
 
-@PostMapping("/register")
+@PostMapping("/registerUser")
 public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterDTOUser dto, @AuthenticationPrincipal UserEntity currentUser) {
     try {
         String result = us.saveUser(dto, currentUser);
@@ -58,7 +58,7 @@ public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterDTOUser d
     }
 }
 
-     @PostMapping("/login")
+     @PostMapping("/loginUser")
     public ResponseEntity<String> loginUser(@Valid @RequestBody LoginDTO dto) {
         try {
            String token = us.loginUser(dto.getUserName(), dto.getPassWord());
@@ -83,7 +83,7 @@ public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterDTOUser d
         String response = us.resetPassword(email, newPassword);
         return ResponseEntity.ok(response);
     }
-   @DeleteMapping("/delete/{id}")
+   @DeleteMapping("/deleteUser/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable long id) {
     // Lấy thông tin người dùng hiện tại từ SecurityContext
     UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

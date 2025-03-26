@@ -5,6 +5,7 @@ import lombok.Data;
 @Builder
 @Data
 public class CartItemDTO {
+    private Long id;
     private Long productVariantId;
     private String nameProduct;
     private Integer quantity;

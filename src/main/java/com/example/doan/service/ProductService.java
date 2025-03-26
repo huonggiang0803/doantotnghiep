@@ -20,5 +20,5 @@ public interface ProductService {
     List<ProductDTO> geProductDTOs( String size, String color, Double minPrice, Double maxPrice);
     List<ProductImage> getProductImages(long productId);
     void addImagesToProduct(Long productId, List<MultipartFile> imageFiles) ;
-    public Page<Product> findAll(Pageable pageable) ;
+    public Page<Product> findAll(String keyword,Pageable pageable) ;
 }

@@ -120,6 +120,7 @@ public class CartImplement implements CartService {
     }
     
         return CartItemDTO.builder()
+            .id(item.getId()) 
             .productVariantId(item.getProductVariant().getProduct().getId()) 
             .nameProduct(item.getProductVariant().getProduct().getProductName()) 
             .price(item.getPrice()) 
@@ -165,6 +166,20 @@ public class CartImplement implements CartService {
 
         return save(cart);
     }
+    @Override
+    public CartDTO deleteCartItemById(Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+        .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm trong giỏ hàng với ID: " + cartItemId));
+
+        Cart cart = cartItem.getCart();
+        cart.getItems().remove(cartItem);
+        cartItemRepository.delete(cartItem);
+
+        cart.calculateTotalPrice();
+        cartRepository.save(cart);
+
+        return save(cart);
+    }
     
     @Override
     public void xoaAll(Long userId) {
@@ -175,32 +190,56 @@ public class CartImplement implements CartService {
         cart.setTotalPrice(0.0);
         cartRepository.save(cart);
     }
-        @Override
-        public CartDTO updateQuantity(Long userId, Long productId, Integer quantity) {
-            Cart cart = cartRepository.findById(userId).orElseThrow(() -> 
-                new RuntimeException("Không tìm thấy giỏ hàng!")
-            );
-            Optional<CartItem> productInCart = cart.getItems().stream()
-                .filter(item -> item.getProductVariant().getId().equals(productId))
-                .findFirst();
-            if (productInCart.isEmpty()) {
-                throw new RuntimeException("Sản phẩm với ID " + productId + " không có trong giỏ hàng!");
-            }
-            CartItem itemToUpdate = productInCart.get();
-            if (quantity <= 0) {
-                cart.getItems().remove(itemToUpdate);
-                cartItemRepository.delete(itemToUpdate);
-            } else {
-                itemToUpdate.setQuantity(quantity);
-                itemToUpdate.calculateSubTotal();
-            }
-            cart.calculateTotalPrice();
-            if (cart.getItems().isEmpty()) {
-                cart.setTotalPrice(0.0);
-            }
-            cartRepository.save(cart);
-            return save(cart);
+
+        // @Override
+        // public CartDTO updateQuantity(Long userId, Long productId, Integer quantity) {
+        //     Cart cart = cartRepository.findById(userId).orElseThrow(() -> 
+        //         new RuntimeException("Không tìm thấy giỏ hàng!")
+        //     );
+        //     Optional<CartItem> productInCart = cart.getItems().stream()
+        //         .filter(item -> item.getProductVariant() != null 
+        //             && item.getProductVariant().getId() != null
+        //             && item.getProductVariant().getId().equals(productId))
+        //         .findFirst();
+
+        //     if (productInCart.isEmpty()) {
+        //         throw new RuntimeException("Sản phẩm với ID " + productId + " không có trong giỏ hàng!");
+        //     }
+        //     CartItem itemToUpdate = productInCart.get();
+        //     if (quantity <= 0) {
+        //         cart.getItems().remove(itemToUpdate);
+        //         cartItemRepository.delete(itemToUpdate);
+        //     } else {
+        //         itemToUpdate.setQuantity(quantity);
+        //         itemToUpdate.calculateSubTotal();
+        //     }
+        //     cart.calculateTotalPrice();
+        //     if (cart.getItems().isEmpty()) {
+        //         cart.setTotalPrice(0.0);
+        //     }
+        //     cartRepository.save(cart);
+        //     return save(cart);
+        // }
+@Override
+    public CartDTO updateQuantity(Long userId, Long cartItemId, Integer quantity) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm trong giỏ hàng!"));
+
+        if (quantity <= 0) {
+            cartItemRepository.delete(cartItem);
+        } else {
+            cartItem.setQuantity(quantity);
+            cartItem.calculateSubTotal();
+            cartItemRepository.save(cartItem);
         }
-        
+
+        Cart cart = cartItem.getCart();
+        cart.calculateTotalPrice();
+        cartRepository.save(cart);
+
+    return save(cart);
+}
+
+       
     
 }

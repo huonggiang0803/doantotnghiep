@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.doan.dto.PageDTO;
 import com.example.doan.dto.ProductDTO;
 import com.example.doan.entity.Product;
 import com.example.doan.entity.ProductImage;
@@ -28,12 +27,25 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/")
-    public ResponseEntity<List<Product>> getAllProducts(@RequestParam(value = "keyword", required = false) String keyword) {
-        List<Product> products = productService.getAllProduct(keyword);
-        return ResponseEntity.ok(products);
+    @GetMapping("/getAllProductOrSearch_Page")
+    public ResponseEntity<Map<String, Object>> getAllProducts(
+        @RequestParam(value = "keyword", required = false) String keyword,
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productService.findAll(keyword, pageable);
+
+        Map<String, Object> listPage = new HashMap<>();
+        listPage.put("totalPages", productPage.getTotalPages());
+        listPage.put("totalElements", productPage.getTotalElements());
+        listPage.put("numberOfElements", productPage.getNumberOfElements());
+        listPage.put("products", productPage.getContent());
+
+        return ResponseEntity.ok(listPage);
     }
-    @GetMapping("/filter")
+
+    @GetMapping("/filterProduct")
     public ResponseEntity<List<ProductDTO>> filterProduct(@RequestParam(required = false) String size,
     @RequestParam(required = false) String color,
     @RequestParam(required = false) Double minPrice,
@@ -42,26 +54,27 @@ public class ProductController {
         List<ProductDTO> filteredProducts = productService.geProductDTOs(size, color, minPrice, maxPrice);
         return ResponseEntity.ok(filteredProducts);
     }
-    @PostMapping("save")
+
+    @PostMapping("/addProductNew")
     public ResponseEntity<String> createProduct(
     @ModelAttribute ProductDTO productDTO,
     @RequestParam("photos") MultipartFile imageFile
-) {
+    ) {
         Long productId = productService.saveProduct(productDTO, imageFile);
         return ResponseEntity.ok("Sản phẩm đã được lưu với ID: " + productId);
     }
-    @GetMapping("/{id}")
+    @GetMapping("/getProductById/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable long id) {
         Product product = productService.getProductById(id);
         return ResponseEntity.ok(product);
     }
-    @GetMapping("/{id}/sp")
+    @GetMapping("/getAllCategory/{id}")
     public ResponseEntity<List<Product>> getAllCategory(@PathVariable Long id) {
         List<Product> products = categoryService.productCategory(id);
         return ResponseEntity.ok(products);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/updateProduct/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable Long id,
                                             @ModelAttribute ProductDTO productDTO,
                                             @RequestParam("photos") List<MultipartFile> photos) {
@@ -69,20 +82,11 @@ public class ProductController {
     return ResponseEntity.ok("Sản phẩm đã được cập nhật!");
 }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/deleteProduct/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable long id) {
         productService.deleteProductByID(id);
         return ResponseEntity.noContent().build();
     }
-    // @GetMapping("/page/{pageNo}")
-    // public ResponseEntity<Page<Product>> getPaginatedProducts(
-    //         @PathVariable int pageNo,
-    //         @RequestParam(defaultValue = "id") String sortField,
-    //         @RequestParam(defaultValue = "asc") String sortDir) {
-    //     int pageSize = 5;
-    //     Page<Product> page = productService.findPaginated(pageNo, pageSize, sortField, sortDir);
-    //     return ResponseEntity.ok(page);
-    // }
     @GetMapping("/{id}/images")
     public ResponseEntity<List<String>> getProductImages(@PathVariable long id) {
     List<ProductImage> images = productService.getProductImages(id);
@@ -98,19 +102,5 @@ public class ProductController {
 
         productService.addImagesToProduct(id, imageFiles);
         return ResponseEntity.ok("Ảnh đã được thêm vào sản phẩm id: " + id);
-    }
-    @GetMapping("/page")
-    public ResponseEntity<Map<String,Object>> paginate(@RequestBody PageDTO rq) {
-        int p = rq.getPage();
-        int size = rq.getSize();
-        Pageable pageable = PageRequest.of(p, size); 
-        Page<Product> page = productService.findAll(pageable); 
-        Map<String, Object> listPage = new HashMap<>();
-            listPage.put("totalPages", page.getTotalPages());
-            listPage.put("totalElements", page.getTotalElements());
-            listPage.put("numberOfElements", page.getNumberOfElements());
-            listPage.put("products", page.getContent());
-        return ResponseEntity.ok(listPage); 
-        
     }
 }

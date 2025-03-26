@@ -12,4 +12,5 @@ public interface CartService {
     CartDTO delete(Long userId, Long productId);
 
     void xoaAll(Long userId);
+    public CartDTO deleteCartItemById(Long cartItemId);
 }

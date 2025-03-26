@@ -260,9 +260,11 @@ return productDTOs;
         }
         productImageRepository.saveAll(productImages);
     }
-    @Override
-    public Page<Product> findAll(Pageable pageable) {
-        return productRepository.findAll(pageable);
-    }
+    public Page<Product> findAll(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.isEmpty()) {
+            return productRepository.findAll(pageable);
+        }
+        return productRepository.findByProductNameContainingIgnoreCase(keyword, pageable);
+    }  
     
 }

@@ -17,12 +17,12 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("/create")
+    @PostMapping("/createOrder")
     public ResponseEntity<OrderDTO> createOrder(@RequestBody CreateOrderRequest request) {
         OrderDTO orderDTO = orderService.createOrderFromCart(request.getCartId(), request.getShippingId(), request.getPaymentMethod(), request.getShippingMethod());
         return ResponseEntity.ok(orderDTO);
     }
-    @GetMapping("/history/{userId}")
+    @GetMapping("/getOrderHistory/{userId}")
 public ResponseEntity<List<OrderDTO>> getOrderHistory(@PathVariable Long userId) {
     List<OrderDTO> orderHistory = orderService.getOrderHistoryByUser(userId);
     return ResponseEntity.ok(orderHistory);

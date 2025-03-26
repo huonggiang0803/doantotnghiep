@@ -31,7 +31,7 @@ public class CartController {
     return ResponseEntity.ok(cartDTO);
 }
 
-@PostMapping("/add")
+@PostMapping("/addProductToCart")
 public ResponseEntity<?> addProductToCart(@RequestBody CartItemDTO itemDTO) {
     Long userId = getCurrentUserId(); 
     CartDTO updatedCart = cartService.addProduct(
@@ -50,16 +50,28 @@ private Long getCurrentUserId() {
     }
     throw new RuntimeException("Người dùng chưa đăng nhập!");
 }
-@PutMapping("/update")
-public ResponseEntity<CartDTO> updateCartItemQuantity(@RequestBody CartItemDTO itemDTO) {
-    Long userId = getCurrentUserId(); 
-    CartDTO updatedCart = cartService.updateQuantity(userId, itemDTO.getProductVariantId(), itemDTO.getQuantity());
+// @PutMapping("/updateCartItemQuantity")
+//     public ResponseEntity<CartDTO> updateCartItemQuantity(@RequestBody CartItemDTO itemDTO) {
+//         Long userId = getCurrentUserId(); 
+//         CartDTO updatedCart = cartService.updateQuantity(userId, itemDTO.getProductVariantId(), itemDTO.getQuantity());
+//     return ResponseEntity.ok(updatedCart);
+// }
+    @PutMapping("/updateCartItemQuantity")
+    public ResponseEntity<CartDTO> updateCartItemQuantity(@RequestBody CartItemDTO itemDTO) {
+        Long userId = getCurrentUserId(); 
+        CartDTO updatedCart = cartService.updateQuantity(userId, itemDTO.getId(), itemDTO.getQuantity());
     return ResponseEntity.ok(updatedCart);
-}
-    @DeleteMapping("/remove/{productId}")
-public ResponseEntity<CartDTO> removeProductFromCart(@PathVariable Long productId) {
-    Long userId = getCurrentUserId(); 
-    CartDTO updatedCart = cartService.delete(userId, productId);
+    }
+
+    @DeleteMapping("/removeProductFromCart/{productId}")
+    public ResponseEntity<CartDTO> removeProductFromCart(@PathVariable Long productId) {
+        Long userId = getCurrentUserId(); 
+        CartDTO updatedCart = cartService.delete(userId, productId);
+    return ResponseEntity.ok(updatedCart);
+    }
+    @DeleteMapping("/removeCartItem/{cartItemId}")
+    public ResponseEntity<CartDTO> removeCartItem(@PathVariable Long cartItemId) {
+        CartDTO updatedCart = cartService.deleteCartItemById(cartItemId);
     return ResponseEntity.ok(updatedCart);
 }
 
