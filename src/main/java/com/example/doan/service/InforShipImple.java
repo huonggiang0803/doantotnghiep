@@ -17,13 +17,13 @@ public class InforShipImple implements InforShipService{
     @Override
     public long saveShipping(InforShippingDTO inforShippingDTO) {
         InforShipping inforShipping = InforShipping.builder()
-        .fullName(inforShippingDTO.getFullName())
-        .phone(inforShippingDTO.getPhone())
-        .address(inforShippingDTO.getAddress())
-        .build();
+                .fullName(inforShippingDTO.getFullName())
+                .phone(inforShippingDTO.getPhone())
+                .address(inforShippingDTO.getAddress())
+                .build();
         inforShipRepository.save(inforShipping);
+        System.out.println("Shipping ID: " + inforShipping.getId()); // Log shippingId
         return inforShipping.getId();
-
     }
 
     @Override

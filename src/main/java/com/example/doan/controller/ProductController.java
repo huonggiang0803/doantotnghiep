@@ -27,7 +27,7 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/getAllProductOrSearch_Page")
+    @GetMapping("/get-all-product")
     public ResponseEntity<Map<String, Object>> getAllProducts(
         @RequestParam(value = "keyword", required = false) String keyword,
         @RequestParam(value = "page", defaultValue = "0") int page,

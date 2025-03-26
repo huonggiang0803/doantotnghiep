@@ -55,7 +55,14 @@ public class OderImple implements OrderService{
     @Override
     @Transactional
     public OrderDTO createOrderFromCart(Long cartId, Long shippingId, String paymentMethod, String shippingMethod) {
-            Cart cart = cartRepository.findById(cartId)
+        if (cartId == null || shippingId == null) {
+            throw new RuntimeException("cartId hoặc shippingId không được null");
+        }
+
+        System.out.println("cartId: " + cartId);
+        System.out.println("shippingId: " + shippingId);
+
+        Cart cart = cartRepository.findById(cartId)
             .orElseThrow(() -> new RuntimeException("Cart not found"));
 
             if (cart.getUser() == null) {
@@ -69,7 +76,7 @@ public class OderImple implements OrderService{
         throw new RuntimeException("Cart is empty");
     }
     InforShipping shippingAddress = inforShipRepository.findById(shippingId)
-        .orElseThrow(() -> new RuntimeException("Không tìm thất địa chỉ: " + shippingId));
+        .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ: " + shippingId));
         ShipingEnum shippingEnum;
         try {
             shippingEnum = ShipingEnum.valueOf(shippingMethod.toUpperCase());

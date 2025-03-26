@@ -109,26 +109,25 @@ public class UserServiceImplement implements UserService{
         authenticationManager.authenticate(authenticationToken);
         return jwtTokenUtil.generateToken(existingUser);
     }
-    
+
+    @Override
     public String forgotPassword(String email) {
-        Optional<UserEntity> userOpt = userRepository.findByEmail(email);  
+        Optional<UserEntity> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
-            return "Email không tồn tại!";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email không tồn tại!");
         }
         UserEntity user = userOpt.get();
         String otp = taoMaOTP();
         maOTP.put(user.getEmail(), otp);
-        otpExpiry.put(user.getEmail(), System.currentTimeMillis() + (5 * 60 * 1000)); 
-        String resetLink = linkReset(user.getUsername());
+        otpExpiry.put(user.getEmail(), System.currentTimeMillis() + (1 * 60 * 1000));
         try {
             String subject = "Mã OTP và liên kết đặt lại mật khẩu";
             String body = "Mã OTP của bạn là: " + otp + ".\n"
-                        + "Link đặt lại mật khẩu: " + resetLink + "\n"
-                        + "Mã OTP có hiệu lực trong 5 phút.";
+                    + "Mã OTP có hiệu lực trong 1 phút.";
             emailService.sendEmail(user.getEmail(), subject, body);
-            return "OTP và link đặt lại mật khẩu đã được gửi đến email của bạn.";
+            return "OTP đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư.";
         } catch (MessagingException e) {
-            return "Lỗi khi gửi email!";
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi gửi email!");
         }
     }
     private String linkReset(String userName) {

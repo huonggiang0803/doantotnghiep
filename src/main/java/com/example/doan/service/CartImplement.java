@@ -37,53 +37,59 @@ public class CartImplement implements CartService {
         Optional<UserEntity> userOtp = userRepository.findById(userId);
         Optional<ProductVariant> prOptional = productVariantReposi.findById(productVariantId);
 
-        if (userOtp.isEmpty() || prOptional.isEmpty()) {
-            throw new RuntimeException("User hoặc sản phẩm không tồn tại!");
+        if (userOtp.isEmpty()) {
+            throw new RuntimeException("User không tồn tại với userId: " + userId);
         }
-        
+        if (prOptional.isEmpty()) {
+            throw new RuntimeException("ProductVariant không tồn tại với productVariantId: " + productVariantId);
+        }
+
         UserEntity user = userOtp.get();
         ProductVariant productVariant = prOptional.get();
 
-       if (productVariant == null) {
-        throw new RuntimeException("ProductVariant không hợp lệ!");
-    }
-    if (price == null) {
-        price = productVariant.getPromotionalPrice();
-    } 
-    List<Cart> carts = cartRepository.findByUserId(userId); 
-    if (carts.isEmpty()) {
-        Cart newCart = new Cart();
-        newCart.setUser(user);
-        newCart.setTotalPrice(0.0);
-        newCart.setItems(new ArrayList<>());
-    }
-    else if (carts.size() > 1) {
-        throw new RuntimeException("Lỗi dữ liệu: Một user có nhiều giỏ hàng!");
-    }
-    Cart cart = carts.get(0);
+        if (price == null) {
+            price = productVariant.getPromotionalPrice();
+        }
+
+        List<Cart> carts = cartRepository.findByUserId(userId);
+        Cart cart;
+        if (carts.isEmpty()) {
+            cart = new Cart();
+            cart.setUser(user);
+            cart.setTotalPrice(0.0);
+            cart.setItems(new ArrayList<>());
+            cartRepository.save(cart); // Save the new cart
+        } else if (carts.size() > 1) {
+            throw new RuntimeException("Lỗi dữ liệu: Một user có nhiều giỏ hàng!");
+        } else {
+            cart = carts.get(0);
+        }
 
         Optional<CartItem> eOptional = cart.getItems().stream()
-        .filter(item -> item.getProductVariant() != null && item.getProductVariant().getId().equals(productVariantId))
-        .findFirst();    
-            if (img == null && productVariant.getProduct().getImages() != null 
-            && !productVariant.getProduct().getImages().isEmpty()) {
+                .filter(item -> item.getProductVariant() != null && item.getProductVariant().getId().equals(productVariantId))
+                .findFirst();
+
+        if (img == null && productVariant.getProduct().getImages() != null
+                && !productVariant.getProduct().getImages().isEmpty()) {
             img = productVariant.getProduct().getImages().get(0).getFileName();
         }
+
         if (eOptional.isPresent()) {
             CartItem ex = eOptional.get();
             ex.setQuantity(ex.getQuantity() + quantity);
             ex.calculateSubTotal();
         } else {
             CartItem newItem = CartItem.builder()
-            .cart(cart)
-            .productVariant(productVariant)
-            .quantity(quantity)
-            .price(price)
-            .img(img)
-            .build();
+                    .cart(cart)
+                    .productVariant(productVariant)
+                    .quantity(quantity)
+                    .price(price)
+                    .img(img)
+                    .build();
             newItem.calculateSubTotal();
             cart.getItems().add(newItem);
         }
+
         cart.calculateTotalPrice();
         cartRepository.save(cart);
         cartItemRepository.saveAll(cart.getItems());
