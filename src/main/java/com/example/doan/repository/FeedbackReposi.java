@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.example.doan.entity.FeedBack;
+@Repository
 public interface FeedbackReposi extends JpaRepository<FeedBack, Long>{
     @Query("SELECT COALESCE(AVG(f.rating), 0) FROM FeedBack f WHERE f.product.id = :productId")
     Double averageRatingByProductId(@Param("productId") Long productId);
