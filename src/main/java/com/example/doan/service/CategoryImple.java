@@ -33,4 +33,21 @@ public class CategoryImple implements CategoryService{
         return categoryRepository.save(category);
     }
 
+    @Override
+    public void deleteCategory(Long id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new RuntimeException("Category not found");
+        }
+       categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public Category updateCategory(Long id, Category categoryDetails) {
+        Category category = categoryRepository.findById(id).orElseThrow(()->new RuntimeException("Category not found"));
+        category.setCategoryName(categoryDetails.getCategoryName());
+        category.setGender(categoryDetails.getGender());
+        category.setDescription(categoryDetails.getDescription());
+        return categoryRepository.save(category);
+    }
+
 }

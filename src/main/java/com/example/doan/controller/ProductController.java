@@ -79,7 +79,16 @@ public class ProductController {
         Category newCategory = categoryService.addCategory(category);
         return ResponseEntity.ok(newCategory);
     }
-
+    @DeleteMapping("deleteCategory/{id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+    return ResponseEntity.ok("Category deleted successfully");
+    }
+    @PutMapping("updateCategory/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
+        Category updatedCategory = categoryService.updateCategory(id, categoryDetails);
+    return ResponseEntity.ok(updatedCategory);
+}
     @PutMapping("/updateProduct/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable Long id,
                                             @ModelAttribute ProductDTO productDTO,
