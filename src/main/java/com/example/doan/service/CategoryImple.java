@@ -27,7 +27,7 @@ public class CategoryImple implements CategoryService{
     public List<Category> getAllCategory() {
        return categoryRepository.findAll();
     }
-
+    
     @Override
     public Category addCategory(Category category) {
         return categoryRepository.save(category);

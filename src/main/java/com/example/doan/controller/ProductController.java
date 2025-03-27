@@ -74,6 +74,11 @@ public class ProductController {
         List<Product> products = categoryService.productCategory(id);
         return ResponseEntity.ok(products);
     }
+    @GetMapping("/getAll")
+    public ResponseEntity<List<Category>> getAllCategories() {
+        List<Category> categories = categoryService.getAllCategory();
+        return ResponseEntity.ok(categories);
+    }
     @PostMapping("/addCategory")
     public ResponseEntity<Category> addCategory(@RequestBody Category category) {
         Category newCategory = categoryService.addCategory(category);
