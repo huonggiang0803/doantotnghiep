@@ -33,4 +33,18 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("maxPrice") Double maxPrice
     );
     Page<Product> findByProductNameContainingIgnoreCase(String productName, Pageable pageable);
+
+    @Query("SELECT p FROM Product p JOIN p.variants v WHERE "
+            + "(:keyword IS NULL OR p.productName LIKE %:keyword%) AND "
+            + "(:size IS NULL OR v.size = :size) AND "
+            + "(:color IS NULL OR v.color = :color) AND "
+            + "((:minPrice IS NULL OR v.price >= :minPrice) AND (:maxPrice IS NULL OR v.price <= :maxPrice))")
+    Page<Product> filterProducts(
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            @Param("size") String size,
+            @Param("color") String color,
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
 }

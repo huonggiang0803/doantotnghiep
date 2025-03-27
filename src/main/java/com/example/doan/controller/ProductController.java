@@ -1,8 +1,6 @@
 package com.example.doan.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,12 +44,28 @@ public class ProductController {
     }
 
     @GetMapping("/filterProduct")
-    public ResponseEntity<List<ProductDTO>> filterProduct(@RequestParam(required = false) String size,
-    @RequestParam(required = false) String color,
-    @RequestParam(required = false) Double minPrice,
-    @RequestParam(required = false) Double maxPrice
-    ){
-        List<ProductDTO> filteredProducts = productService.geProductDTOs(size, color, minPrice, maxPrice);
+    public ResponseEntity<List<ProductDTO>> filterProduct(
+            @RequestParam(required = false) String price,
+            @RequestParam(required = false) String size, // Ensure 'size' is included here
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer page
+    ) {
+        // Parse the price range
+        Double minPrice = null;
+        Double maxPrice = null;
+        if (price != null && !price.isEmpty()) {
+            String[] priceRange = price.split("-");
+            if (priceRange.length > 0) {
+                minPrice = Double.parseDouble(priceRange[0].trim());
+            }
+            if (priceRange.length > 1) {
+                maxPrice = Double.parseDouble(priceRange[1].trim());
+            }
+        }
+
+        // Call the service to filter products
+        List<ProductDTO> filteredProducts = productService.filterProducts(minPrice, maxPrice, size, color, keyword, page);
         return ResponseEntity.ok(filteredProducts);
     }
 

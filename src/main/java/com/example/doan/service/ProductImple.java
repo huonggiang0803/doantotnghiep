@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -265,6 +267,36 @@ return productDTOs;
             return productRepository.findAll(pageable);
         }
         return productRepository.findByProductNameContainingIgnoreCase(keyword, pageable);
-    }  
-    
+    }
+
+    @Override
+    public List<ProductDTO> filterProducts(Double minPrice, Double maxPrice, String size, String color, String keyword, Integer page) {
+        // Create a pageable object
+        PageRequest pageable = PageRequest.of(page != null ? page : 0, 10);
+
+        // Call the repository method to filter products
+        Page<Product> filteredProducts = productRepository.filterProducts(minPrice, maxPrice, size, color, keyword, pageable);
+
+        // Convert the filtered products to DTOs
+        return filteredProducts.map(product -> ProductDTO.builder()
+                .id(product.getId())
+                .productName(product.getProductName())
+                .describe(product.getDescribe())
+                .categoryId(product.getCategory().getId())
+                .brand(product.getBrand())
+                .rating(product.getRating())
+                .reviewCount(product.getReviewCount())
+                .variants(product.getVariants().stream()
+                        .map(variant -> ProductVariantDTO.builder()
+                                .size(variant.getSize())
+                                .color(variant.getColor())
+                                .price(variant.getPrice())
+                                .promotionalPrice(variant.getPromotionalPrice())
+                                .stock(variant.getStock())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build()
+        ).getContent();
+    }
+
 }

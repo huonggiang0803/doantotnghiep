@@ -21,4 +21,5 @@ public interface ProductService {
     List<ProductImage> getProductImages(long productId);
     void addImagesToProduct(Long productId, List<MultipartFile> imageFiles) ;
     public Page<Product> findAll(String keyword,Pageable pageable) ;
+    List<ProductDTO> filterProducts(Double minPrice, Double maxPrice, String size, String color, String keyword, Integer page);
 }
