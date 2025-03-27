@@ -74,12 +74,26 @@ public class ProductController {
         List<Product> products = categoryService.productCategory(id);
         return ResponseEntity.ok(products);
     }
+    @GetMapping("/getAll")
+    public ResponseEntity<List<Category>> getAllCategories() {
+        List<Category> categories = categoryService.getAllCategory();
+        return ResponseEntity.ok(categories);
+    }
     @PostMapping("/addCategory")
     public ResponseEntity<Category> addCategory(@RequestBody Category category) {
         Category newCategory = categoryService.addCategory(category);
         return ResponseEntity.ok(newCategory);
     }
-
+    @DeleteMapping("deleteCategory/{id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+    return ResponseEntity.ok("Category deleted successfully");
+    }
+    @PutMapping("updateCategory/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
+        Category updatedCategory = categoryService.updateCategory(id, categoryDetails);
+    return ResponseEntity.ok(updatedCategory);
+}
     @PutMapping("/updateProduct/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable Long id,
                                             @ModelAttribute ProductDTO productDTO,
