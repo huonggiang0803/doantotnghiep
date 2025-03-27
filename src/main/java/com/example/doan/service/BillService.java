@@ -1,15 +1,66 @@
 package com.example.doan.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.doan.entity.Bill;
-import com.example.doan.entity.OrderItem;
+import com.example.doan.entity.BillItem;
 import com.example.doan.entity.Orders;
-import com.example.doan.entity.UserEntity;
+import com.example.doan.repository.BillRepository;
+import com.example.doan.repository.OrderRepository;
 
-public interface BillService {
-    Bill createBill(UserEntity userEntity, Orders order, List<OrderItem> cartItems, String paymentMethod);
-    byte[] generateInvoicePdf(Long billId);
-    void sendInvoiceEmail(Long billId);
-    public void updatePaymentStatus(Long billId, boolean isPaid);
+@Service
+public class BillService {
+    @Autowired
+    private BillRepository billRepository;
+
+    @Autowired
+    private OrderRepository ordersRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    public Bill getBillById(Long billId) {
+        return billRepository.findById(billId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn với ID: " + billId));
+    }
+    public Bill createBill(Long orderId) {
+        
+        Orders order = ordersRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        if (billRepository.existsByOrder(order)) {
+            throw new RuntimeException("Bill for this order already exists!");
+        }
+
+        Bill bill = new Bill();
+        bill.setOrder(order);
+        bill.setUserEntity(order.getUserId());
+        bill.setShipping(order.getInforShipping());
+        bill.setTotalAmount(order.getTotalPrice());
+        bill.setPaymentMethod(order.getPaymentMethod());
+        bill.setShippingFee(order.getShippingFee());
+        bill.setStatus(order.getPaymentStatus().toString());
+        billRepository.save(bill);
+
+        List<BillItem> billItems = order.getItems().stream().map(orderItem -> {
+            BillItem billItem = new BillItem();
+            billItem.setBill(bill);
+            billItem.setProductVariant(orderItem.getProduct());
+            billItem.setQuantity(orderItem.getQuantity());
+            billItem.setPrice(orderItem.getPrice());
+            billItem.setTotalPrice(orderItem.getSubTotal());
+            return billItem;
+        }).collect(Collectors.toList());
+
+        bill.setBillItems(billItems);
+
+        billRepository.save(bill);
+
+        emailService.sendInvoiceEmail(bill);
+
+        return bill;
+    }
 }

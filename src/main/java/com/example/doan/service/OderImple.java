@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.doan.dto.OrderDTO;
 import com.example.doan.dto.OrderItemDTO;
-import com.example.doan.entity.Bill;
 import com.example.doan.entity.Cart;
 import com.example.doan.entity.CartItem;
 import com.example.doan.entity.InforShipping;
@@ -17,7 +16,6 @@ import com.example.doan.entity.OrderItem;
 import com.example.doan.entity.Orders;
 import com.example.doan.entity.ProductVariant;
 import com.example.doan.entity.UserEntity;
-import com.example.doan.repository.BillRepository;
 import com.example.doan.repository.CartItemRepository;
 import com.example.doan.repository.CartRepository;
 import com.example.doan.repository.InforShipRepository;
@@ -55,10 +53,8 @@ public class OderImple implements OrderService{
     private UserRepository userRepository;
 
     @Autowired
-    private BillRepository billRepository;
-
-    @Autowired
     private BillService billService;
+
 
     @Override
     @Transactional
@@ -123,10 +119,12 @@ public class OderImple implements OrderService{
         }
         order.setTotalPrice(total + order.calculateShippingFee());
         order.setShippingFee(order.calculateShippingFee());
+        orderRepository.save(order);
+        billService.createBill(order.getId());
+
         cartItemRepository.deleteAll(cartItems);
         cartRepository.delete(cart);
 
-        Bill bill = billService.createBill(user, order, order.getItems(), paymentMethod);
         return mapToDTO(order);
 
 }  
@@ -171,5 +169,22 @@ public class OderImple implements OrderService{
 
         List<Orders> orders = orderRepository.findByUserId(user);
         return orders.stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+    @Transactional
+    public Orders updatePaymentStatus(Long orderId) {
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng!"));
+
+        if ("VNPAY".equalsIgnoreCase(order.getPaymentMethod())) {
+            order.setPaymentStatus(PaymentStatus.PAID);
+        } else {
+            order.setPaymentStatus(PaymentStatus.UNPAID);
+        }
+
+        order.setOrderEnum(OrderEnum.PENDING);
+        orderRepository.save(order);
+        billService.createBill(order.getId());
+
+        return order;
     }
 }
