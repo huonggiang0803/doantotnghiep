@@ -1,6 +1,8 @@
 package com.example.doan.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -58,15 +60,29 @@ public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterDTOUser d
     }
 }
 
-     @PostMapping("/loginUser")
-    public ResponseEntity<String> loginUser(@Valid @RequestBody LoginDTO dto) {
+    @PostMapping("/loginUser")
+    public ResponseEntity<Map<String, String>> loginUser(@Valid @RequestBody LoginDTO dto) {
         try {
-           String token = us.loginUser(dto.getUserName(), dto.getPassWord());
-            return ResponseEntity.ok(token);
+            String token = us.loginUser(dto.getUserName(), dto.getPassWord());
+            UserEntity user = us.findByUsername(dto.getUserName());
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
+            response.put("role", user.getType().toString()); // Include the user's role
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+//     @PostMapping("/loginUser")
+//    public ResponseEntity<String> loginUser(@Valid @RequestBody LoginDTO dto) {
+//        try {
+//           String token = us.loginUser(dto.getUserName(), dto.getPassWord());
+//            return ResponseEntity.ok(token);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordDTO dto) {
         String result = us.forgotPassword(dto.getEmail());
