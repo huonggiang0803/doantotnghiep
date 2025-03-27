@@ -8,4 +8,5 @@ import com.example.doan.entity.Product;
 public interface CategoryService {
     List<Product> productCategory(Long categoryId);
     List<Category> getAllCategory();
+    Category addCategory(Category category);
 }

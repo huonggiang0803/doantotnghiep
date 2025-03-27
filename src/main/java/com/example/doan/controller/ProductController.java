@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.doan.dto.ProductDTO;
+import com.example.doan.entity.Category;
 import com.example.doan.entity.Product;
 import com.example.doan.entity.ProductImage;
 import com.example.doan.service.CategoryService;
@@ -31,7 +32,7 @@ public class ProductController {
     public ResponseEntity<Map<String, Object>> getAllProducts(
         @RequestParam(value = "keyword", required = false) String keyword,
         @RequestParam(value = "page", defaultValue = "0") int page,
-        @RequestParam(value = "size", defaultValue = "10") int size) {
+        @RequestParam(value = "size", defaultValue = "1000") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = productService.findAll(keyword, pageable);
@@ -72,6 +73,11 @@ public class ProductController {
     public ResponseEntity<List<Product>> getAllCategory(@PathVariable Long id) {
         List<Product> products = categoryService.productCategory(id);
         return ResponseEntity.ok(products);
+    }
+    @PostMapping("/addCategory")
+    public ResponseEntity<Category> addCategory(@RequestBody Category category) {
+        Category newCategory = categoryService.addCategory(category);
+        return ResponseEntity.ok(newCategory);
     }
 
     @PutMapping("/updateProduct/{id}")

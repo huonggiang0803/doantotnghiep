@@ -14,9 +14,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Category extends AbstractEntity {
     @Column(name = "category_name", nullable = false, unique = true)
     private String categoryName; 
+    
+    @Column(name = "gender")
+    private String gender;
 
     @Column(name = "description")
     private String description; 
+
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
