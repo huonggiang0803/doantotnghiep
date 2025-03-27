@@ -29,7 +29,7 @@ public class ProductController {
     public ResponseEntity<Map<String, Object>> getAllProducts(
         @RequestParam(value = "keyword", required = false) String keyword,
         @RequestParam(value = "page", defaultValue = "0") int page,
-        @RequestParam(value = "size", defaultValue = "10") int size) {
+        @RequestParam(value = "size", defaultValue = "1000") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = productService.findAll(keyword, pageable);

@@ -34,6 +34,7 @@ public class WebSecurityConfig {
             .requestMatchers("/api/users/all").hasRole("ADMIN")
             .requestMatchers("/api/orders/**").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/product-photo/**").permitAll() 
+            .requestMatchers("/api/bills/**").permitAll()
             .anyRequest().authenticated()
 );
         return http.build();

@@ -47,23 +47,25 @@ public class CartImplement implements CartService {
         UserEntity user = userOtp.get();
         ProductVariant productVariant = prOptional.get();
 
-        if (price == null) {
-            price = productVariant.getPromotionalPrice();
-        }
-
-        List<Cart> carts = cartRepository.findByUserId(userId);
-        Cart cart;
-        if (carts.isEmpty()) {
-            cart = new Cart();
-            cart.setUser(user);
-            cart.setTotalPrice(0.0);
-            cart.setItems(new ArrayList<>());
-            cartRepository.save(cart); // Save the new cart
-        } else if (carts.size() > 1) {
-            throw new RuntimeException("Lỗi dữ liệu: Một user có nhiều giỏ hàng!");
-        } else {
-            cart = carts.get(0);
-        }
+       if (productVariant == null) {
+        throw new RuntimeException("ProductVariant không hợp lệ!");
+    }
+    if (price == null) {
+        price = productVariant.getPromotionalPrice();
+    } 
+    List<Cart> carts = cartRepository.findByUserId(userId); 
+    if (carts.isEmpty()) {
+        Cart newCart = new Cart();
+        newCart.setUser(user);
+        newCart.setTotalPrice(0.0);
+        newCart.setItems(new ArrayList<>());
+        newCart = cartRepository.save(newCart); // Lưu vào database
+        carts.add(newCart);//s
+    }
+    else if (carts.size() > 1) {
+        throw new RuntimeException("Lỗi dữ liệu: Một user có nhiều giỏ hàng!");
+    }
+    Cart cart = carts.get(0);
 
         Optional<CartItem> eOptional = cart.getItems().stream()
                 .filter(item -> item.getProductVariant() != null && item.getProductVariant().getId().equals(productVariantId))
@@ -87,6 +89,7 @@ public class CartImplement implements CartService {
                     .img(img)
                     .build();
             newItem.calculateSubTotal();
+            cartItemRepository.save(newItem);   //ư
             cart.getItems().add(newItem);
         }
 

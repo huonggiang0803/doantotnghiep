@@ -3,8 +3,6 @@ package com.example.doan.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import com.example.doan.status.OrderEnum;
 import com.example.doan.status.PaymentStatus;
