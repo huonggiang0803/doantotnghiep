@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+import com.example.doan.repository.CartItemRepository;
+import com.example.doan.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,10 +41,13 @@ public class UserServiceImplement implements UserService{
     private EmailService emailService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    private final CartItemRepository cartItemRepository;
+    private final CartRepository cartRepository;
 
     private static final Map<String, String> maOTP = new HashMap<>();
     private static final Map<String, Long> otpEx = new HashMap<>();
     private static final Map<String, Long> otpExpiry = new HashMap<>();
+
     @Override
     public String saveUser(RegisterDTOUser userRequestDTO, UserEntity currentUser) {
         if (!userRequestDTO.getPassWord().equals(userRequestDTO.getConfirmPassword())) {
@@ -163,16 +168,18 @@ public class UserServiceImplement implements UserService{
         return "OTP hợp lệ! Bạn có thể đặt lại mật khẩu.";
     }
     @Override
-public void deleteUser(long id, UserEntity currentUser) {
-    Optional<UserEntity> userToDelete = userRepository.findById(id);
-    if (userToDelete.isEmpty()) {
-        throw new RuntimeException("User not found");
+    public void deleteUser(long id, UserEntity currentUser) {
+        Optional<UserEntity> userToDelete = userRepository.findById(id);
+        if (userToDelete.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        if ( currentUser.getType() != UserType.ADMIN) {
+            throw new RuntimeException("Bạn không có quyền xóa người dùng!");
+        }
+        cartItemRepository.deleteByUserId(userToDelete.get().getId());
+        cartRepository.deleteByUserId(userToDelete.get().getId());
+        userRepository.delete(userToDelete.get());
     }
-    if ( currentUser.getType() != UserType.ADMIN) {
-        throw new RuntimeException("Bạn không có quyền xóa người dùng!");
-    }
-    userRepository.delete(userToDelete.get());
-}
     @Override
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll(); 
