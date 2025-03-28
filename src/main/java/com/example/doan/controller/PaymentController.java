@@ -125,14 +125,7 @@ public class PaymentController {
             order.setPaymentStatus(PaymentStatus.PAID);
             order.setOrderEnum(OrderEnum.PENDING);
             orderRepository.save(order);
-     
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        UserEntity user = userService.findByUsername(username);
-            List<OrderItem> orderItems = order.getItems(); 
-
-    Bill bill = billService.createBill(user, order, orderItems, "VNPAY");
-    billService.sendInvoiceEmail(bill.getId());        
+            billService.createBill(orderId);
             return ResponseEntity.ok("Thanh toán thành công! Đơn hàng đã được cập nhật.");
         } else {
             order.setPaymentStatus(PaymentStatus.UNPAID);

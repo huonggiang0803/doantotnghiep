@@ -27,12 +27,14 @@ public class Bill extends AbstractEntity{
     @JoinColumn(name = "customer_id")
     private UserEntity userEntity;
 
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
+    private List<OrderItem> items;
+
     @ManyToOne
     @JoinColumn(name = "shipping_id", nullable = false)
     private InforShipping shipping;
 
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-
     private List<BillItem> billItems;
 
     private double totalAmount;

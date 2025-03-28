@@ -1,11 +1,13 @@
 package com.example.doan.service;
 
-import java.nio.charset.StandardCharsets;
-
-import org.springframework.core.io.ByteArrayResource;
+import java.io.File;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import com.example.doan.entity.Bill;
+import com.example.doan.jmageBill.InvoiceImageGenerator;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -25,19 +27,23 @@ public class EmailService {
         helper.setText(body, true); 
         javaMailSender.send(message);
     }
-    public void sendInvoiceEmail(String to, String subject, String body, byte[] pdfData) throws MessagingException {
-        if (pdfData == null || pdfData.length == 0) {
-            throw new MessagingException(" Lỗi: File PDF rỗng, không thể gửi email!");
+    public void sendInvoiceEmail(Bill bill) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(bill.getUserEntity().getEmail());
+            helper.setSubject("Hóa đơn thanh toán");
+            helper.setText("Xin chào, đây là hóa đơn sản phẩm của bạn!");
+
+            // Tạo ảnh hóa đơn
+            File invoiceImage = InvoiceImageGenerator.generateInvoiceImage(bill);
+            FileSystemResource file = new FileSystemResource(invoiceImage);
+            helper.addAttachment("invoice.png", file);
+
+            javaMailSender.send(message);
+            System.out.println("Email gửi thành công!");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(body, true);
-        helper.addAttachment("HoaDon.pdf", new ByteArrayResource(pdfData));
-
-        javaMailSender.send(message);
-        System.out.println("Email hóa đơn đã gửi thành công tới: " + to);
     }
 }

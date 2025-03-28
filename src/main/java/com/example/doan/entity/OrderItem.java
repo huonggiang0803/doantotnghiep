@@ -24,6 +24,9 @@ public class OrderItem extends AbstractEntity {
 
     private String img; 
 
+    @ManyToOne
+    @JoinColumn(name = "bill_id")
+    private Bill bill;
     public void calculateSubTotal() {
         this.subTotal = product.getFinalPrice() * this.quantity;
     }
