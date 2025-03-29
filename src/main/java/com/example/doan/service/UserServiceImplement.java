@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+import com.example.doan.repository.CartItemRepository;
+import com.example.doan.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,15 +43,11 @@ public class UserServiceImplement implements UserService{
     private EmailService emailService;
     @Autowired
     private AuthenticationManager authenticationManager;
-    @Autowired
-    private CartRepository cartRepository;
-    @Autowired
-    private OrderRepository orderRepository;
-
 
     private static final Map<String, String> maOTP = new HashMap<>();
     private static final Map<String, Long> otpEx = new HashMap<>();
     private static final Map<String, Long> otpExpiry = new HashMap<>();
+
     @Override
     public String saveUser(RegisterDTOUser userRequestDTO, UserEntity currentUser) {
         if (!userRequestDTO.getPassWord().equals(userRequestDTO.getConfirmPassword())) {
@@ -173,20 +171,16 @@ public class UserServiceImplement implements UserService{
     }
 
     @Override
-    public void deleteUser(long id, UserEntity currentUser) {
+public void deleteUser(long id, UserEntity currentUser) {
     Optional<UserEntity> userToDelete = userRepository.findById(id);
     if (userToDelete.isEmpty()) {
-        throw new RuntimeException("User không tồn tại");
+        throw new RuntimeException("User not found");
     }
-    if (currentUser.getType() != UserType.ADMIN) {
+    if ( currentUser.getType() != UserType.ADMIN) {
         throw new RuntimeException("Bạn không có quyền xóa người dùng!");
     }
-    UserEntity user = userToDelete.get();
-    user.setIs_deleted((byte) 1); 
-    userRepository.save(user);
+    userRepository.delete(userToDelete.get());
 }
-
-
     @Override
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll(); 
