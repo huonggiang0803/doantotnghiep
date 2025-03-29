@@ -25,4 +25,8 @@ public class Category extends AbstractEntity {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Product> products;  
+
+    @Column(name = "is_deleted")
+    private Byte is_deleted = 0; 
+
 }

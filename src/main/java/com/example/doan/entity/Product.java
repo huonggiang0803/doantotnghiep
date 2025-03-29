@@ -55,19 +55,7 @@ public class Product extends AbstractEntity {
     @JsonManagedReference
     private List<ProductImage> images;
 
-    // public void updateStatus() {
-    //     if (variants == null || variants.isEmpty()) {
-    //         this.productStatus = ProductStatus.OUT_OF_STOCK;
-    //         return;
-    //     }
-    //     boolean hasAvailableVariant = this.variants.stream()
-    //     .anyMatch(variant -> variant.getStock() > 0); 
-
-    //     this.productStatus = hasAvailableVariant ? ProductStatus.AVAILABLE : ProductStatus.OUT_OF_STOCK;
-    // }
-    
-    // public int calculateTotalStock() {
-    //     return variants != null ? variants.stream().mapToInt(ProductVariant::getStock).sum() : 0;
-    // }
+    @Column(name = "is_deleted")
+    private Byte is_deleted = 0;
 
 }

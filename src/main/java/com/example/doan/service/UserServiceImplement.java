@@ -18,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.doan.components.JwtTokenUtil;
 import com.example.doan.dto.RegisterDTOUser;
 import com.example.doan.entity.UserEntity;
+import com.example.doan.repository.CartRepository;
+import com.example.doan.repository.OrderRepository;
 import com.example.doan.repository.UserRepository;
 import com.example.doan.status.UserType;
 
@@ -39,6 +41,11 @@ public class UserServiceImplement implements UserService{
     private EmailService emailService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private CartRepository cartRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+
 
     private static final Map<String, String> maOTP = new HashMap<>();
     private static final Map<String, Long> otpEx = new HashMap<>();
@@ -73,7 +80,7 @@ public class UserServiceImplement implements UserService{
         .dateOfBirth(userRequestDTO.getDateOfBirth())
         .phone(userRequestDTO.getPhone())
         .gender(userRequestDTO.getGender())
-        .status(userRequestDTO.getStatus())
+        .is_deleted((byte) 0)
         .type(UserType.valueOf(userRequestDTO.getType().toUpperCase()))
         .build();
         userRepository.save(user);
@@ -100,7 +107,9 @@ public class UserServiceImplement implements UserService{
             throw new RuntimeException("Người dùng không tồn tại!");
         }
         UserEntity user = userO.get();
-        
+        if (user.getIs_deleted() == 1) {
+            throw new RuntimeException("Tài khoản của bạn đã bị vô hiệu hóa, vui lòng liên hệ hỗ trợ!");
+        }
         if (!passwordEncoder.matches(password, user.getPassword())) { 
             throw new RuntimeException("Mật khẩu không chính xác!");
         }
@@ -162,17 +171,22 @@ public class UserServiceImplement implements UserService{
         
         return "OTP hợp lệ! Bạn có thể đặt lại mật khẩu.";
     }
+
     @Override
-public void deleteUser(long id, UserEntity currentUser) {
+    public void deleteUser(long id, UserEntity currentUser) {
     Optional<UserEntity> userToDelete = userRepository.findById(id);
     if (userToDelete.isEmpty()) {
-        throw new RuntimeException("User not found");
+        throw new RuntimeException("User không tồn tại");
     }
-    if ( currentUser.getType() != UserType.ADMIN) {
+    if (currentUser.getType() != UserType.ADMIN) {
         throw new RuntimeException("Bạn không có quyền xóa người dùng!");
     }
-    userRepository.delete(userToDelete.get());
+    UserEntity user = userToDelete.get();
+    user.setIs_deleted((byte) 1); 
+    userRepository.save(user);
 }
+
+
     @Override
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll(); 

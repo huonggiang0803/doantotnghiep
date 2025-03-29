@@ -52,12 +52,14 @@ import lombok.Setter;
     // @JdbcTypeCode(SqlTypes.NAMED_ENUM): Ánh xạ Enum Java với kiểu dữ liệu ENUM trong PostgreSQL.
     @Column(name = "gender", nullable = false)
     private GenderEnum gender;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private UserStatus status;
+
+    @Column(name = "is_deleted", nullable = false)
+    private Byte is_deleted = 0;
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private UserType type;
+    @Column(name = "fullname")
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
       List<SimpleGrantedAuthority> authorities = new ArrayList<>();

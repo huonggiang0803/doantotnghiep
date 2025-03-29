@@ -9,4 +9,5 @@ import com.example.doan.entity.Cart;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
     List<Cart> findByUserId(Long id);
+    void deleteByUserId(Long userId);
 }
