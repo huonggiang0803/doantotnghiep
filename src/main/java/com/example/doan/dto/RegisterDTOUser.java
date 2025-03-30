@@ -51,8 +51,7 @@ public class RegisterDTOUser {
     @GenderSubset(anyOf = {GenderEnum.NAM, GenderEnum.NỮ, GenderEnum.KHÁC})
     private GenderEnum gender;
 
-    @EnumPattern(name = "status", regexp = "ACTIVE|INACTIVE|NONE")
-    private UserStatus status;
+    private Byte is_deleted;
 
     @NotNull(message = "type must be not null")
     @EnumValue(name = "type", enumClass = UserType.class)

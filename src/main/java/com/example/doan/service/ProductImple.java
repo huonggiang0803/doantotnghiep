@@ -58,6 +58,7 @@ public class ProductImple implements ProductService{
             .rating(productDTO.getRating())
             .reviewCount(productDTO.getReviewCount())
             .releaseDate(releaseDate)   
+            .is_deleted((byte) 0)
             // .productStatus(ProductStatus.OUT_OF_STOCK)   
             .build();
         //    product.updateStatus();
@@ -107,7 +108,11 @@ public Product getProductById(long id) {
 }
     @Override
     public void deleteProductByID(long id) {
-        this.productRepository.deleteById(id);
+        Product product = productRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
+    
+        product.setIs_deleted((byte) 1); 
+        productRepository.save(product);
     }
     @Override
     public List<Product> getAllProduct(String keyword) {
@@ -197,11 +202,12 @@ public Product getProductById(long id) {
                 productImageRepository.saveAll(newImages);
         }
     }
-        @Override
-        public List<ProductDTO> geProductDTOs(String size, String color, Double minPrice, Double maxPrice) {
-            List<Product> products = productRepository.findFilteredProducts(size, color, minPrice, maxPrice);
-            return converToDTOs(products);
-        }
+    @Override
+    public List<ProductDTO> geProductDTOs(String size, String color, Double minPrice, Double maxPrice) {
+        List<Product> products = productRepository.findFilteredProducts(size, color, minPrice, maxPrice);
+        return converToDTOs(products);
+    }
+
     public List<ProductDTO> converToDTOs(List<Product> products){
         List<ProductDTO> productDTOs = new ArrayList<>();
     for (Product product : products) {
@@ -236,9 +242,9 @@ public Product getProductById(long id) {
         .variants(variantDTOs) 
         .build();
 
-productDTOs.add(productDTO);
-}
-return productDTOs;
+        productDTOs.add(productDTO);
+    }
+    return productDTOs;
 
     }
     @Override

@@ -47,6 +47,10 @@ public class CartImplement implements CartService {
         UserEntity user = userOtp.get();
         ProductVariant productVariant = prOptional.get();
 
+        if (productVariant.getProduct().getIs_deleted() == 1) {
+            throw new RuntimeException("Sản phẩm này đã bị xóa và không thể thêm vào giỏ hàng!");
+        }
+
        if (productVariant == null) {
         throw new RuntimeException("ProductVariant không hợp lệ!");
     }
