@@ -23,7 +23,7 @@ public class WebSecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(requests -> requests
-            .requestMatchers("/api/users/register", "/api/users/loginUser", "/api/users/forgot-password","/api/users/reset-password", "/api/users/verify-otp").permitAll()
+            .requestMatchers("/api/users/registerUser", "/api/users/loginUser", "/api/users/forgot-password","/api/users/reset-password", "/api/users/verify-otp").permitAll()
             .requestMatchers("/api/products/**","/api/products/","/api/products/page").permitAll()
             .requestMatchers("/api/ship/save","/api/ship/**").permitAll()
             .requestMatchers("/api/orders/**").permitAll()

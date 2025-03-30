@@ -109,6 +109,6 @@ public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterDTOUser d
         throw new AccessDeniedException("Bạn không có quyền xóa người dùng!");
     }
     us.deleteUser(id, currentUser);
-    return ResponseEntity.ok("User deleted successfully");
+    return ResponseEntity.ok("Tài khoản đã bị vô hiệu hóa");
 }
 }

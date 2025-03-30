@@ -35,10 +35,13 @@ public class CategoryImple implements CategoryService{
 
     @Override
     public void deleteCategory(Long id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new RuntimeException("Category not found");
-        }
-       categoryRepository.deleteById(id);
+        // if (!categoryRepository.existsById(id)) {
+        //     throw new RuntimeException("Category not found");
+        // }
+        Category category = categoryRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Category not found"));
+        category.setIs_deleted((byte) 1);
+        categoryRepository.save(category);
     }
 
     @Override
@@ -47,6 +50,8 @@ public class CategoryImple implements CategoryService{
         category.setCategoryName(categoryDetails.getCategoryName());
         category.setGender(categoryDetails.getGender());
         category.setDescription(categoryDetails.getDescription());
+        category.setIs_deleted((byte) 0);
+
         return categoryRepository.save(category);
     }
 
