@@ -27,7 +27,7 @@ public class RegisterDTOUser {
     private String fullName;
 
     @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
+    @Size(min = 5, message = "Mật khẩu phải có ít nhất 5 ký tự")
     private String passWord;
 
     @NotBlank(message = "Xác nhận mật khẩu không được để trống")

@@ -39,14 +39,6 @@ public class Product extends AbstractEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<FeedBack> feedbacks = new ArrayList<>();
 
-    @Column(name = "release_date") 
-    @Temporal(TemporalType.DATE)
-    private Date releaseDate;
-
-    // @Column(name = "product_status", nullable = false)
-    // @Enumerated(EnumType.STRING)
-    // private ProductStatus productStatus; 
-
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<ProductVariant> variants = new ArrayList<>();

@@ -14,4 +14,5 @@ public interface UserService {
     List<UserEntity> getAllUsers();
     public String resetPassword(  String email,String newPassword) ;
     public String xacMinhOtp(String email, String otp);
+    public UserEntity save(UserEntity user);
 }

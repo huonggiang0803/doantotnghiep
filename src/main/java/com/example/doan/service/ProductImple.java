@@ -57,7 +57,6 @@ public class ProductImple implements ProductService{
             .brand(productDTO.getBrand())
             .rating(productDTO.getRating())
             .reviewCount(productDTO.getReviewCount())
-            .releaseDate(releaseDate)   
             .is_deleted((byte) 0)
             // .productStatus(ProductStatus.OUT_OF_STOCK)   
             .build();
@@ -136,20 +135,10 @@ public Product getProductById(long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
 
-                Date releaseDate = null;
-                if (productDTO.getReleaseDate() != null && !productDTO.getReleaseDate().isEmpty()) {
-                    try {
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        releaseDate = dateFormat.parse(productDTO.getReleaseDate());
-                    } catch (ParseException e) {
-                        throw new RuntimeException("Định dạng ngày không hợp lệ. Định dạng đúng: yyyy-MM-dd");
-                    }
-                }
         product.setProductName(productDTO.getProductName());
         product.setDescribe(productDTO.getDescribe());
         product.setRating(productDTO.getRating());
         product.setReviewCount(productDTO.getReviewCount());
-        product.setReleaseDate(releaseDate);
         productRepository.save(product);
 
         List<ProductVariant> oProductVariants = productVariantReposi.findByProductId(id);
