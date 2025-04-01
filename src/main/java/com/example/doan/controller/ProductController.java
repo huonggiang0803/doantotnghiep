@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,7 +61,7 @@ public class ProductController {
     @PostMapping("/addProductNew")
     public ResponseEntity<String> createProduct(
     @ModelAttribute ProductDTO productDTO,
-    @RequestParam("photos") MultipartFile imageFile
+    @RequestParam("photos") List<MultipartFile> imageFile
     ) {
         Long productId = productService.saveProduct(productDTO, imageFile);
         return ResponseEntity.ok("Sản phẩm đã được lưu với ID: " + productId);
@@ -94,13 +96,19 @@ public class ProductController {
         Category updatedCategory = categoryService.updateCategory(id, categoryDetails);
     return ResponseEntity.ok(updatedCategory);
 }
-    @PutMapping("/updateProduct/{id}")
-    public ResponseEntity<String> updateProduct(@PathVariable Long id,
-                                            @ModelAttribute ProductDTO productDTO,
-                                            @RequestParam("photos") List<MultipartFile> photos) {
-    productService.updateProduct(id, productDTO, photos);
-    return ResponseEntity.ok("Sản phẩm đã được cập nhật!");
-}
+
+    @PutMapping(value = "/updateProduct/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateProduct(
+            @PathVariable Long id,
+            @ModelAttribute ProductDTO productDTO,
+            @RequestParam("photos") List<MultipartFile> imageFiles) {
+        try {
+            productService.updateProduct(id, productDTO, imageFiles);
+            return ResponseEntity.ok("Sản phẩm đã được cập nhật thành công!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra: " + e.getMessage());
+        }
+    }
 
     @DeleteMapping("/deleteProduct/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable long id) {

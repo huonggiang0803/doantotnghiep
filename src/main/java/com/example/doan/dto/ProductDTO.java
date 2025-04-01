@@ -42,6 +42,7 @@ public class ProductDTO {
     @Min(value = 0, message = "Số lượng đánh giá không thể nhỏ hơn 0")
     private Integer reviewCount;
 
+    @Builder.Default
     private List<ProductVariantDTO> variants = new ArrayList<>();
     private Byte status;
 

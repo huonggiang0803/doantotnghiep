@@ -1,5 +1,6 @@
 package com.example.doan.dto;
 
+import com.example.doan.status.ProductStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -37,4 +38,5 @@ public class ProductVariantDTO {
     @PositiveOrZero(message = "Giá khuyến mãi phải >= 0")
     private Double promotionalPrice;
 
+    private ProductStatus productStatus;
 }
