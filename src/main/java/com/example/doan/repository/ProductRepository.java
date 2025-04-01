@@ -25,12 +25,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
            "WHERE (:size IS NULL OR v.size = :size) " +   // Nếu size không null, tìm sản phẩm có size đó
            "AND (:color IS NULL OR v.color = :color) " +  // Nếu color không null, tìm sản phẩm có màu đó
            "AND (:minPrice IS NULL OR v.price >= :minPrice) " + // Nếu minPrice không null, tìm sản phẩm có giá >= minPrice
-           "AND (:maxPrice IS NULL OR v.price <= :maxPrice)")   // Nếu maxPrice không null, tìm sản phẩm có giá <= maxPrice
+           "AND (:maxPrice IS NULL OR v.price <= :maxPrice)")
     List<Product> findFilteredProducts(
             @Param("size") String size,
             @Param("color") String color,
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice
     );
-    Page<Product> findByProductNameContainingIgnoreCase(String productName, Pageable pageable);
+    Page<Product> findByProductNameContainingIgnoreCaseAndIsDeleted(String productName, byte isDeleted, Pageable pageable);
 }

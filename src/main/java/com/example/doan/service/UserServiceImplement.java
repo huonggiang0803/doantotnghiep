@@ -179,7 +179,9 @@ public void deleteUser(long id, UserEntity currentUser) {
     if ( currentUser.getType() != UserType.ADMIN) {
         throw new RuntimeException("Bạn không có quyền xóa người dùng!");
     }
-    userRepository.delete(userToDelete.get());
+    UserEntity user = userToDelete.get();
+    user.setIs_deleted((byte) 1);
+    userRepository.save(user);
 }
     @Override
     public List<UserEntity> getAllUsers() {

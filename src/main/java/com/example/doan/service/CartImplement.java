@@ -47,7 +47,7 @@ public class CartImplement implements CartService {
         UserEntity user = userOtp.get();
         ProductVariant productVariant = prOptional.get();
 
-        if (productVariant.getProduct().getIs_deleted() == 1) {
+        if (productVariant.getProduct().getIsDeleted() == 1) {
             throw new RuntimeException("Sản phẩm này đã bị xóa và không thể thêm vào giỏ hàng!");
         }
 
@@ -93,7 +93,6 @@ public class CartImplement implements CartService {
                     .img(img)
                     .build();
             newItem.calculateSubTotal();
-            cartItemRepository.save(newItem);   //ư
             cart.getItems().add(newItem);
         }
 

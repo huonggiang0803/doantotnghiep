@@ -36,70 +36,125 @@ public class ProductImple implements ProductService{
     private ProductImageRepository productImageRepository;
     @Autowired
     private ProductVariantReposi productVariantReposi;
-   @Override
+//   @Override
+//
+//   public Long saveProduct(ProductDTO productDTO, MultipartFile imageFile) {
+//    Category category = categoryRepository.findById(productDTO.getCategoryId())
+//            .orElseThrow(() -> new RuntimeException("Category không tồn tại"));
+//    Product product = Product.builder()
+//            .productName(productDTO.getProductName())
+//            .describe(productDTO.getDescribe())
+//            .category(category)
+//            .brand(productDTO.getBrand())
+//            .rating(productDTO.getRating())
+//            .reviewCount(productDTO.getReviewCount())
+//            .is_deleted((byte) 0)
+//            // .productStatus(ProductStatus.OUT_OF_STOCK)
+//            .build();
+//        //    product.updateStatus();
+//            product = productRepository.save(product);
+//
+//            List<ProductVariant> variants = new ArrayList<>();
+//            for (ProductVariantDTO variantDTO : productDTO.getVariants()) {
+//             ProductVariant variant = ProductVariant.builder()
+//                .product(product)
+//                .color(variantDTO.getColor())
+//                .size(variantDTO.getSize())
+//                .material(variantDTO.getMaterial())
+//                .price(variantDTO.getPrice())
+//                .stock(variantDTO.getStock())
+//                .discountPercentage(variantDTO.getDiscountPercentage())
+//                .productStatus(ProductStatus.AVAILABLE)
+//                .promotionalPrice(variantDTO.getPromotionalPrice())
+//                .build();
+//        variants.add(variant);
+//    }
+//    productVariantReposi.saveAll(variants);
+//    // product.updateStatus();
+//    productRepository.save(product);
+//
+//    List<ProductImage> imageUrl = new ArrayList<>();
+//    if (imageFile != null && !imageFile.isEmpty()) {
+//        try {
+//            String fileName = imageFile.getOriginalFilename();
+//            FileUploadUtil.saveFile("product-photo", fileName, imageFile);
+//
+//            ProductImage image = new ProductImage();
+//            image.setFileName("/product-photo/" + fileName);
+//            image.setProduct(product);
+//            imageUrl.add(image);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Lỗi lưu ảnh: " + e.getMessage());
+//        }
+//    }
+//    productImageRepository.saveAll(imageUrl);
+//    return product.getId();
+//}
 
-   public Long saveProduct(ProductDTO productDTO, MultipartFile imageFile) {
-    Category category = categoryRepository.findById(productDTO.getCategoryId())
-            .orElseThrow(() -> new RuntimeException("Category không tồn tại"));
-            Date releaseDate = null;
-            if (productDTO.getReleaseDate() != null && !productDTO.getReleaseDate().isEmpty()) {
+    @Override
+    public Long saveProduct(ProductDTO productDTO, List<MultipartFile> imageFiles) {
+        // Kiểm tra và khởi tạo variants nếu null
+        List<ProductVariantDTO> variants = productDTO.getVariants();
+        if (variants == null) {
+            variants = new ArrayList<>();
+        }
+
+        // Lấy danh mục
+        Category category = categoryRepository.findById(productDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category không tồn tại"));
+
+        // Tạo sản phẩm
+        Product product = Product.builder()
+                .productName(productDTO.getProductName())
+                .describe(productDTO.getDescribe())
+                .category(category)
+                .brand(productDTO.getBrand())
+                .rating(productDTO.getRating())
+                .reviewCount(productDTO.getReviewCount())
+                .isDeleted((byte) 0)
+                .build();
+
+        product = productRepository.save(product);
+
+        // Lưu các biến thể sản phẩm
+        List<ProductVariant> variantEntities = new ArrayList<>();
+        for (ProductVariantDTO variantDTO : variants) {
+            ProductVariant variant = ProductVariant.builder()
+                    .product(product)
+                    .color(variantDTO.getColor())
+                    .size(variantDTO.getSize())
+                    .material(variantDTO.getMaterial())
+                    .price(variantDTO.getPrice())
+                    .stock(variantDTO.getStock())
+                    .discountPercentage(variantDTO.getDiscountPercentage())
+                    .productStatus(ProductStatus.AVAILABLE)
+                    .promotionalPrice(variantDTO.getPromotionalPrice())
+                    .build();
+            variantEntities.add(variant);
+        }
+        productVariantReposi.saveAll(variantEntities);
+
+        // Lưu danh sách ảnh
+        List<ProductImage> imageEntities = new ArrayList<>();
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            for (MultipartFile imageFile : imageFiles) {
                 try {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    releaseDate = dateFormat.parse(productDTO.getReleaseDate());
-                } catch (ParseException e) {
-                    throw new RuntimeException("Định dạng ngày không hợp lệ. Định dạng đúng: yyyy-MM-dd");
+                    String fileName = imageFile.getOriginalFilename();
+                    FileUploadUtil.saveFile("product-photo", fileName, imageFile);
+
+                    ProductImage image = new ProductImage();
+                    image.setFileName("/product-photo/" + fileName);
+                    image.setProduct(product);
+                    imageEntities.add(image);
+                } catch (IOException e) {
+                    throw new RuntimeException("Lỗi lưu ảnh: " + e.getMessage());
                 }
             }
-    Product product = Product.builder()
-            .productName(productDTO.getProductName())
-            .describe(productDTO.getDescribe())
-            .category(category)
-            .brand(productDTO.getBrand())
-            .rating(productDTO.getRating())
-            .reviewCount(productDTO.getReviewCount())
-            .releaseDate(releaseDate)   
-            .is_deleted((byte) 0)
-            // .productStatus(ProductStatus.OUT_OF_STOCK)   
-            .build();
-        //    product.updateStatus();
-            product = productRepository.save(product);
-
-            List<ProductVariant> variants = new ArrayList<>();
-            for (ProductVariantDTO variantDTO : productDTO.getVariants()) {
-             ProductVariant variant = ProductVariant.builder()
-                .product(product)
-                .color(variantDTO.getColor())
-                .size(variantDTO.getSize())
-                .material(variantDTO.getMaterial())
-                .price(variantDTO.getPrice())
-                .stock(variantDTO.getStock())
-                .discountPercentage(variantDTO.getDiscountPercentage())
-                .productStatus(ProductStatus.AVAILABLE)
-                .promotionalPrice(variantDTO.getPromotionalPrice())
-                .build();
-        variants.add(variant);
-    }
-    productVariantReposi.saveAll(variants);
-    // product.updateStatus();
-    productRepository.save(product);
-
-    List<ProductImage> imageUrl = new ArrayList<>();
-    if (imageFile != null && !imageFile.isEmpty()) {
-        try {
-            String fileName = imageFile.getOriginalFilename();
-            FileUploadUtil.saveFile("product-photo", fileName, imageFile);
-
-            ProductImage image = new ProductImage();
-            image.setFileName("/product-photo/" + fileName);
-            image.setProduct(product); 
-            imageUrl.add(image);
-        } catch (IOException e) {
-            throw new RuntimeException("Lỗi lưu ảnh: " + e.getMessage());
         }
+        productImageRepository.saveAll(imageEntities);
+
+        return product.getId();
     }
-    productImageRepository.saveAll(imageUrl);
-    return product.getId();
-}
     @Override
 public Product getProductById(long id) {
     System.out.println("Tìm sản phẩm với ID: " + id);
@@ -111,7 +166,7 @@ public Product getProductById(long id) {
         Product product = productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
     
-        product.setIs_deleted((byte) 1); 
+        product.setIsDeleted((byte) 1);
         productRepository.save(product);
     }
     @Override
@@ -132,76 +187,117 @@ public Product getProductById(long id) {
         return productRepository.findAll(pageable);
     }
 
-    public void updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> photos) {
+    @Override
+    public void updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> imageFiles) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
-                Date releaseDate = null;
-                if (productDTO.getReleaseDate() != null && !productDTO.getReleaseDate().isEmpty()) {
-                    try {
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        releaseDate = dateFormat.parse(productDTO.getReleaseDate());
-                    } catch (ParseException e) {
-                        throw new RuntimeException("Định dạng ngày không hợp lệ. Định dạng đúng: yyyy-MM-dd");
-                    }
-                }
+        // Cập nhật thông tin sản phẩm
         product.setProductName(productDTO.getProductName());
         product.setDescribe(productDTO.getDescribe());
-        product.setRating(productDTO.getRating());
-        product.setReviewCount(productDTO.getReviewCount());
-        product.setReleaseDate(releaseDate);
+        product.setBrand(productDTO.getBrand());
+        product.setCategory(categoryRepository.findById(productDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại")));
+
         productRepository.save(product);
 
-        List<ProductVariant> oProductVariants = productVariantReposi.findByProductId(id);
-        productVariantReposi.deleteAll(oProductVariants);
+        // Cập nhật danh sách biến thể
+        List<ProductVariant> variantEntities = new ArrayList<>();
+        for (ProductVariantDTO variantDTO : productDTO.getVariants()) {
+            ProductVariant variant = ProductVariant.builder()
+                    .product(product)
+                    .color(variantDTO.getColor())
+                    .size(variantDTO.getSize())
+                    .material(variantDTO.getMaterial())
+                    .price(variantDTO.getPrice())
+                    .stock(variantDTO.getStock())
+                    .discountPercentage(variantDTO.getDiscountPercentage())
+                    .promotionalPrice(variantDTO.getPromotionalPrice())
+                    .productStatus(variantDTO.getStock() > 0 ? ProductStatus.AVAILABLE : ProductStatus.OUT_OF_STOCK) // Gán giá trị mặc định
+                    .build();
+            variantEntities.add(variant);
+        }
+        productVariantReposi.saveAll(variantEntities);
 
-        List<ProductVariant> newVariants = new ArrayList<>();
-    for (ProductVariantDTO variantDTO : productDTO.getVariants()) {
-        ProductVariant variant = ProductVariant.builder()
-                .product(product)
-                .color(variantDTO.getColor())
-                .size(variantDTO.getSize())
-                .material(variantDTO.getMaterial())
-                .price(variantDTO.getPrice())
-                .stock(variantDTO.getStock())
-                .discountPercentage(variantDTO.getDiscountPercentage())
-                .promotionalPrice(variantDTO.getPromotionalPrice())
-                .build();
-        newVariants.add(variant);
-    }
-    productVariantReposi.saveAll(newVariants);
-    // product.updateStatus();
-    productRepository.save(product);
+        // Cập nhật danh sách ảnh
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            List<ProductImage> imageEntities = new ArrayList<>();
+            for (MultipartFile imageFile : imageFiles) {
+                try {
+                    String fileName = imageFile.getOriginalFilename();
+                    FileUploadUtil.saveFile("product-photo", fileName, imageFile);
 
-        if (photos != null && !photos.isEmpty()) {
-            List<ProductImage> oldImages = productImageRepository.findByProductId(id);
-            
-            for (ProductImage oldImage : oldImages) {
-                String oldFilePath = oldImage.getFileName();
-                FileUploadUtil.deleteFile(oldFilePath); 
-            }
-                productImageRepository.deleteAll(oldImages);
-    
-            List<ProductImage> newImages = new ArrayList<>();
-                for (MultipartFile photo : photos) {
-                if (!photo.isEmpty()) {
-                    try {
-                        String fileName = photo.getOriginalFilename();
-                        FileUploadUtil.saveFile("product-photo", fileName, photo);
-                        
-                        ProductImage image = new ProductImage();
-                        image.setFileName("/product-photo/" + fileName);
-                        image.setProduct(product);
-                        newImages.add(image);
-    
-                    } catch (IOException e) {
-                        throw new RuntimeException("Lỗi lưu ảnh: " + e.getMessage());
-                    }
+                    ProductImage image = new ProductImage();
+                    image.setFileName("/product-photo/" + fileName);
+                    image.setProduct(product);
+                    imageEntities.add(image);
+                } catch (IOException e) {
+                    throw new RuntimeException("Lỗi lưu ảnh: " + e.getMessage());
                 }
             }
-                productImageRepository.saveAll(newImages);
+            productImageRepository.saveAll(imageEntities);
         }
     }
+
+//    public void updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> photos) {
+//        Product product = productRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
+//        product.setProductName(productDTO.getProductName());
+//        product.setDescribe(productDTO.getDescribe());
+//        product.setRating(productDTO.getRating());
+//        product.setReviewCount(productDTO.getReviewCount());
+//        productRepository.save(product);
+//
+//        List<ProductVariant> oProductVariants = productVariantReposi.findByProductId(id);
+//        productVariantReposi.deleteAll(oProductVariants);
+//
+//        List<ProductVariant> newVariants = new ArrayList<>();
+//    for (ProductVariantDTO variantDTO : productDTO.getVariants()) {
+//        ProductVariant variant = ProductVariant.builder()
+//                .product(product)
+//                .color(variantDTO.getColor())
+//                .size(variantDTO.getSize())
+//                .material(variantDTO.getMaterial())
+//                .price(variantDTO.getPrice())
+//                .stock(variantDTO.getStock())
+//                .discountPercentage(variantDTO.getDiscountPercentage())
+//                .promotionalPrice(variantDTO.getPromotionalPrice())
+//                .build();
+//        newVariants.add(variant);
+//    }
+//    productVariantReposi.saveAll(newVariants);
+//    // product.updateStatus();
+//    productRepository.save(product);
+//
+//        if (photos != null && !photos.isEmpty()) {
+//            List<ProductImage> oldImages = productImageRepository.findByProductId(id);
+//
+//            for (ProductImage oldImage : oldImages) {
+//                String oldFilePath = oldImage.getFileName();
+//                FileUploadUtil.deleteFile(oldFilePath);
+//            }
+//                productImageRepository.deleteAll(oldImages);
+//
+//            List<ProductImage> newImages = new ArrayList<>();
+//                for (MultipartFile photo : photos) {
+//                if (!photo.isEmpty()) {
+//                    try {
+//                        String fileName = photo.getOriginalFilename();
+//                        FileUploadUtil.saveFile("product-photo", fileName, photo);
+//
+//                        ProductImage image = new ProductImage();
+//                        image.setFileName("/product-photo/" + fileName);
+//                        image.setProduct(product);
+//                        newImages.add(image);
+//
+//                    } catch (IOException e) {
+//                        throw new RuntimeException("Lỗi lưu ảnh: " + e.getMessage());
+//                    }
+//                }
+//            }
+//                productImageRepository.saveAll(newImages);
+//        }
+//    }
     @Override
     public List<ProductDTO> geProductDTOs(String size, String color, Double minPrice, Double maxPrice) {
         List<Product> products = productRepository.findFilteredProducts(size, color, minPrice, maxPrice);
@@ -270,7 +366,7 @@ public Product getProductById(long id) {
         if (keyword == null || keyword.isEmpty()) {
             return productRepository.findAll(pageable);
         }
-        return productRepository.findByProductNameContainingIgnoreCase(keyword, pageable);
+        return productRepository.findByProductNameContainingIgnoreCaseAndIsDeleted(keyword, (byte) 0, pageable);
     }  
     
 }

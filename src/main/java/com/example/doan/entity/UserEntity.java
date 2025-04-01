@@ -53,6 +53,7 @@ import lombok.Setter;
     @Column(name = "gender", nullable = false)
     private GenderEnum gender;
 
+    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
     private Byte is_deleted = 0;
     @Enumerated(EnumType.STRING)

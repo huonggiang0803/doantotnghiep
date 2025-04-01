@@ -11,7 +11,7 @@ import com.example.doan.entity.Product;
 import com.example.doan.entity.ProductImage;
 
 public interface ProductService {
-    public Long saveProduct(ProductDTO productDTO, MultipartFile imageFile);
+    public Long saveProduct(ProductDTO productDTO, List<MultipartFile> imageFile);
     Product getProductById(long id);
     void deleteProductByID(long id);
     List<Product> getAllProduct(String keyword);
