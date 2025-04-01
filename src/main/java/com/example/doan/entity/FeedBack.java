@@ -1,6 +1,12 @@
 package com.example.doan.entity;
+import java.util.List;
+
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,6 +32,9 @@ public class FeedBack extends AbstractEntity {
     @JsonIgnore
     private Product product;
 
+    @Column(name = "media_url")
+    private List<String> mediaUrls; 
+    
     private String feedbackText;
 
     private int rating;

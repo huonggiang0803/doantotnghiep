@@ -32,6 +32,7 @@ public class WebSecurityConfig {
             .requestMatchers("/api/ship/save","/api/ship/**").permitAll()
             .requestMatchers("/api/orders/**").permitAll()
             .requestMatchers("/api/payment/**").permitAll()
+            .requestMatchers("/api/feedback/**").permitAll()
             .requestMatchers("/api/cart/**").authenticated()
             .requestMatchers("/api/users/delete/**").hasRole("ADMIN")
             .requestMatchers("/api/products/delete/**").hasRole("ADMIN")

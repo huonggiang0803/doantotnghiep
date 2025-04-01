@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.doan.dto.FeedBackDTO;
 import com.example.doan.entity.UserEntity;
@@ -22,12 +24,17 @@ import com.example.doan.service.FeedBackService;
 public class FeedBackController {
     @Autowired
     FeedBackService feedBackService;
-    @PostMapping("/add")
-public ResponseEntity<?> addFeedback(@RequestBody FeedBackDTO feedbackDTO) {
-    Long userId = getCurrentUserId(); // Lấy user đang đăng nhập
-    FeedBackDTO createdFeedback = feedBackService.addFeedback(userId, feedbackDTO.getProductId(), feedbackDTO.getFeedbackText(), feedbackDTO.getRating());
-    return ResponseEntity.ok(createdFeedback);
-}
+   @PostMapping("/add")
+    public ResponseEntity<?> addFeedback(
+        @RequestParam("productId") Long productId,
+        @RequestParam(value = "files", required = false) MultipartFile[] files, // Nhận danh sách file
+        @RequestParam("feedbackText") String feedbackText,
+        @RequestParam("rating") int rating) {
+
+        Long userId = getCurrentUserId(); // Lấy user đang đăng nhập
+        FeedBackDTO createdFeedback = feedBackService.addFeedback(userId, productId, files, feedbackText, rating);
+        return ResponseEntity.ok(createdFeedback);
+    }
 @GetMapping("/product/{productId}")
 public ResponseEntity<List<FeedBackDTO>> getFeedbackByProduct(@PathVariable Long productId) {
     List<FeedBackDTO> feedbacks = feedBackService.getFeedbackByProductId(productId);
