@@ -34,7 +34,7 @@ public class OrderController {
         if (request.getCartId() == null) {
             throw new IllegalArgumentException("Cart ID must not be null");
         }
-        System.out.println("Shipping ID received: " + request.getShippingId()); // Log giá trị shippingId
+        System.out.println("Shipping ID received: " + request.getShippingId()); 
         OrderDTO orderDTO = orderService.createOrderFromCart(
                 request.getCartId(),
                 request.getShippingId(),
@@ -48,15 +48,14 @@ public ResponseEntity<List<OrderDTO>> getOrderHistory(@PathVariable Long userId)
     List<OrderDTO> orderHistory = orderService.getOrderHistoryByUser(userId);
     return ResponseEntity.ok(orderHistory);
 }
-@PostMapping("/checkout/{billId}")
-    public ResponseEntity<?> checkout(@PathVariable Long billId) {
-        try {
-            Bill bill = billService.getBillById(billId);
-            emailService.sendInvoiceEmail(bill);
-            return ResponseEntity.ok("Hóa đơn đã được gửi email thành công!");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi: " + e.getMessage());
-        }
+@PostMapping("/createBill/{orderId}")
+public ResponseEntity<?> generateBill(@PathVariable Long orderId) {
+    try {
+        Bill bill = billService.createBill(orderId);
+        return ResponseEntity.ok("Hóa đơn đã được tạo thành công!");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi: " + e.getMessage());
     }
+}
 
 }
