@@ -42,4 +42,21 @@ public class InforShipController {
             @RequestBody InforShippingDTO inforShippingDTO) {
         inforShipService.updateShip(id, inforShippingDTO);
         return ResponseEntity.ok("Cập nhật thông tin giao hàng thành công!");
-    }}
+    }
+
+    // API để lấy thông tin giao hàng mặc định
+    @GetMapping("/default")
+    public ResponseEntity<InforShippingDTO> getDefaultShipping() {
+        InforShippingDTO defaultShipping = inforShipService.getDefaultShipping();
+        if (defaultShipping == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(defaultShipping);
+    }
+
+    @PutMapping("/default/{id}")
+    public ResponseEntity<String> setDefaultShipping(@PathVariable Long id) {
+        inforShipService.setDefaultShipping(id);
+        return ResponseEntity.ok("Đã đặt địa chỉ mặc định thành công!");
+    }
+}

@@ -13,6 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InforShippingDTO {
+    private long id;
     @NotBlank(message = "Họ và tên không được để trống")
     @Size(min = 3, max = 50, message = "Họ và tên phải từ 3 đến 50 ký tự")
     private String fullName; 
@@ -21,4 +22,6 @@ public class InforShippingDTO {
     private String phone; 
     @NotBlank(message = "Địa chỉ không được để trống")
     private String address;
+
+    private boolean isDefault;
 }

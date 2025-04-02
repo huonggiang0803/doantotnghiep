@@ -44,10 +44,11 @@ public List<InforShippingDTO> getAllShip() {
 
     for (InforShipping ship : shippingList) {
         InforShippingDTO dto = new InforShippingDTO(
+            ship.getId(),
             ship.getFullName(),
             ship.getPhone(),
-            ship.getAddress()
-           
+            ship.getAddress(),
+                ship.isDefault()
         );
         shippingDTOList.add(dto);
     }
@@ -59,6 +60,35 @@ public List<InforShippingDTO> getAllShip() {
             this.inforShipRepository.deleteById(id);
     }
 
+    public InforShippingDTO getDefaultShipping() {
+        return inforShipRepository.findByIsDefaultTrue()
+                .map(this::convertToDTO) // Chuyển đổi từ entity sang DTO
+                .orElse(null);
+    }
+
+    private InforShippingDTO convertToDTO(InforShipping entity) {
+        InforShippingDTO dto = new InforShippingDTO();
+        dto.setId(entity.getId());
+        dto.setFullName(entity.getFullName());
+        dto.setAddress(entity.getAddress());
+        dto.setPhone(entity.getPhone());
+        return dto;
+    }
+
+    public void setDefaultShipping(Long id) {
+        // Bỏ trạng thái mặc định của tất cả các địa chỉ
+        List<InforShipping> allShipping = inforShipRepository.findAll();
+        for (InforShipping shipping : allShipping) {
+            shipping.setDefault(false); // Đặt tất cả địa chỉ thành không mặc định
+        }
+        inforShipRepository.saveAll(allShipping);
+
+        // Đặt trạng thái mặc định cho địa chỉ được chọn
+        InforShipping defaultShipping = inforShipRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ với ID: " + id));
+        defaultShipping.setDefault(true);
+        inforShipRepository.save(defaultShipping);
+    }
 }
     
 
