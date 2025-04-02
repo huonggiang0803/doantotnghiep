@@ -9,5 +9,7 @@ public interface InforShipService {
     long saveShipping (InforShippingDTO inforShippingDTO);
     void updateShip(long ship_id, InforShippingDTO inforShippingDTO);
     List<InforShippingDTO> getAllShip();
-    void deleteProductByID(long id); 
+    void deleteProductByID(long id);
+    InforShippingDTO getDefaultShipping();
+    void setDefaultShipping(Long id);
 }

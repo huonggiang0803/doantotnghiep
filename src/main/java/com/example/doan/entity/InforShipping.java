@@ -26,4 +26,7 @@ public class InforShipping extends AbstractEntity{
 
     @Column(name = "address")
     private String address;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isDefault;
 }
