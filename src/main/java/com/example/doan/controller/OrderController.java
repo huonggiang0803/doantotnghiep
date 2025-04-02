@@ -28,7 +28,19 @@ public class OrderController {
 
     @PostMapping("/createOrder")
     public ResponseEntity<OrderDTO> createOrder(@RequestBody CreateOrderRequest request) {
-        OrderDTO orderDTO = orderService.createOrderFromCart(request.getCartId(), request.getShippingId(), request.getPaymentMethod(), request.getShippingMethod());
+        if (request.getShippingId() == null) {
+            throw new IllegalArgumentException("Shipping ID must not be null");
+        }
+        if (request.getCartId() == null) {
+            throw new IllegalArgumentException("Cart ID must not be null");
+        }
+        System.out.println("Shipping ID received: " + request.getShippingId()); // Log giá trị shippingId
+        OrderDTO orderDTO = orderService.createOrderFromCart(
+                request.getCartId(),
+                request.getShippingId(),
+                request.getPaymentMethod(),
+                request.getShippingMethod()
+        );
         return ResponseEntity.ok(orderDTO);
     }
     @GetMapping("/getOrderHistory/{userId}")
