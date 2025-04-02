@@ -176,7 +176,7 @@ public void deleteUser(long id, UserEntity currentUser) {
     if (userToDelete.isEmpty()) {
         throw new RuntimeException("User not found");
     }
-    if ( currentUser.getType() != UserType.ADMIN) {
+    if (currentUser.getType() != UserType.ADMIN) {
         throw new RuntimeException("Bạn không có quyền xóa người dùng!");
     }
     UserEntity user = userToDelete.get();
@@ -200,6 +200,10 @@ public void deleteUser(long id, UserEntity currentUser) {
         
         return "Mật khẩu đã được thay đổi thành công!";
     }
-    
+    @Override
+    public UserEntity save(UserEntity user) {
+        return userRepository.save(user);
+    }
+
 
 }
