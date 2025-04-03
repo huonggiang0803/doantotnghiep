@@ -120,7 +120,6 @@ public class OderImple implements OrderService{
         order.setTotalPrice(total + order.calculateShippingFee());
         order.setShippingFee(order.calculateShippingFee());
         orderRepository.save(order);
-        billService.createBill(order.getId());
 
         cartItemRepository.deleteAll(cartItems);
         cartRepository.delete(cart);

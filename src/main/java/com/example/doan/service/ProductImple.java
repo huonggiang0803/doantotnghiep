@@ -134,7 +134,6 @@ public class ProductImple implements ProductService{
         }
         productVariantReposi.saveAll(variantEntities);
 
-        // Lưu danh sách ảnh
         List<ProductImage> imageEntities = new ArrayList<>();
         if (imageFiles != null && !imageFiles.isEmpty()) {
             for (MultipartFile imageFile : imageFiles) {

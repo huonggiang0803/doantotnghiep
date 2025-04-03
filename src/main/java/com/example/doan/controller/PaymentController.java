@@ -12,22 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.Authentication;
 import com.example.doan.config.Config;
-import com.example.doan.dto.CartDTO;
-import com.example.doan.entity.Bill;
-import com.example.doan.entity.CartItem;
-import com.example.doan.entity.OrderItem;
+
 import com.example.doan.entity.Orders;
-import com.example.doan.entity.UserEntity;
-import com.example.doan.repository.BillRepository;
-import com.example.doan.repository.CartRepository;
+
 import com.example.doan.repository.OrderRepository;
-import com.example.doan.repository.UserRepository;
+
 import com.example.doan.service.BillService;
-import com.example.doan.service.CartService;
-import com.example.doan.service.UserService;
 import com.example.doan.status.OrderEnum;
 import com.example.doan.status.PaymentStatus;
 
@@ -37,14 +28,10 @@ public class PaymentController {
 
     @Autowired
     private OrderRepository orderRepository;
-    @Autowired
-    private UserService userService;
+
     @Autowired
     private BillService billService;
 
-    @Autowired
-    private CartService cartService;
-    
 
     @GetMapping("/create_payment")
     public String createPayment(@RequestParam("orderId") Long orderId) throws UnsupportedEncodingException {

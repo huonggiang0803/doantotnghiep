@@ -29,47 +29,49 @@ public class FeedBackImple implements FeedBackService{
     @Autowired
     private UserRepository userRepository;
     @Override
-    public FeedBackDTO addFeedback(Long userId, Long productId, MultipartFile[] mediaUrls ,String feedbackText, int rating) {
+    public FeedBackDTO addFeedback(Long userId, Long productId, MultipartFile[] mediaUrls, String feedbackText, int rating) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
-
+    
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại!"));
+    
         if (mediaUrls != null && mediaUrls.length > 5) {
             throw new RuntimeException("Số lượng ảnh tối đa là 5!");
         }
-
-            File uploadDir = new File(UPLOAD_DIR);
-            if (!uploadDir.exists()) {
+    
+        File uploadDir = new File(UPLOAD_DIR);
+        if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
+    
         List<String> fileUrls = new ArrayList<>();
         if (mediaUrls != null) {
             for (MultipartFile file : mediaUrls) {
                 String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
                 File filePath = new File(UPLOAD_DIR + fileName);
                 try {
-                    file.transferTo(filePath); 
-                    fileUrls.add(fileName); 
+                    file.transferTo(filePath);
+                    fileUrls.add("/data/" + fileName);  
                 } catch (IOException e) {
                     throw new RuntimeException("Lỗi khi lưu file: " + e.getMessage());
                 }
             }
         }
-
+    
         FeedBack feedback = FeedBack.builder()
                 .user(user)
                 .product(product)
-                .mediaUrls(fileUrls) // Lưu danh sách ảnh
+                .mediaUrls(fileUrls) 
                 .feedbackText(feedbackText)
                 .rating(rating)
                 .build();
-
-
+    
         feedbackRepository.save(feedback);
         updateProductRating(product);
         return mapToDTO(feedback);
     }
+    
     private void updateProductRating(Product product) {
         Double avgRating = feedbackRepository.averageRatingByProductId(product.getId());
         Integer totalReviews = feedbackRepository.countByProductId(product.getId());
