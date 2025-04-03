@@ -30,7 +30,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Orders extends AbstractEntity{
     @ManyToOne
-    private UserEntity userId; 
+    @JoinColumn(name = "user_id", nullable = false) // Ánh xạ đến bảng UserEntity
+    private UserEntity userId;
 
     @Column(name = "total_price")
     private Double totalPrice;

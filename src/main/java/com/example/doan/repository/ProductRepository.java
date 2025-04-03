@@ -21,16 +21,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findById(Long id);
 
     @Query("SELECT DISTINCT p FROM Product p " +
-           "JOIN p.variants v " +
-           "WHERE (:size IS NULL OR v.size = :size) " +   // Nếu size không null, tìm sản phẩm có size đó
-           "AND (:color IS NULL OR v.color = :color) " +  // Nếu color không null, tìm sản phẩm có màu đó
-           "AND (:minPrice IS NULL OR v.price >= :minPrice) " + // Nếu minPrice không null, tìm sản phẩm có giá >= minPrice
-           "AND (:maxPrice IS NULL OR v.price <= :maxPrice)")
-    List<Product> findFilteredProducts(
-            @Param("size") String size,
-            @Param("color") String color,
+            "JOIN p.variants v " +
+            "WHERE (:sizes IS NULL OR v.size IN :sizes) " +
+            "AND (:colors IS NULL OR v.color IN :colors) " +
+            "AND (:minPrice IS NULL OR v.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR v.price <= :maxPrice)")
+    Page<Product> findProductsByFilters(
+            @Param("sizes") List<String> sizes,
+            @Param("colors") List<String> colors,
             @Param("minPrice") Double minPrice,
-            @Param("maxPrice") Double maxPrice
-    );
+            @Param("maxPrice") Double maxPrice,
+            Pageable pageable);
     Page<Product> findByProductNameContainingIgnoreCaseAndIsDeleted(String productName, byte isDeleted, Pageable pageable);
 }

@@ -24,7 +24,7 @@ public class Bill extends AbstractEntity{
     private Orders order;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)

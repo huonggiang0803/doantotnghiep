@@ -28,16 +28,24 @@ public class BillService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn với ID: " + billId));
     }
     public Bill createBill(Long orderId) {
-        
         Orders order = ordersRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+
         if (billRepository.existsByOrder(order)) {
             throw new RuntimeException("Bill for this order already exists!");
         }
 
+        // Kiểm tra xem đơn hàng có thông tin người dùng hay không
+        if (order.getUserId() == null) {
+            throw new RuntimeException("User not found for this order!");
+        }
+
         Bill bill = new Bill();
         bill.setOrder(order);
+
+        // Truyền toàn bộ đối tượng UserEntity
         bill.setUserEntity(order.getUserId());
+
         bill.setShipping(order.getInforShipping());
         bill.setTotalAmount(order.getTotalPrice());
         bill.setPaymentMethod(order.getPaymentMethod());

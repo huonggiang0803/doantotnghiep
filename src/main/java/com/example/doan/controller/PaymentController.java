@@ -100,25 +100,34 @@ public class PaymentController {
     }
 
     @GetMapping("/payment_return")
-    public ResponseEntity<String> paymentReturn(@RequestParam Map<String, String> params) {
+    public ResponseEntity<Map<String, String>> paymentReturn(@RequestParam Map<String, String> params) {
         String vnp_ResponseCode = params.get("vnp_ResponseCode");
         String vnp_TransactionStatus = params.get("vnp_TransactionStatus");
         Long orderId = Long.parseLong(params.get("vnp_TxnRef"));
 
         Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
-        
+
+        Map<String, String> response = new HashMap<>();
+
         if ("00".equals(vnp_ResponseCode) && "00".equals(vnp_TransactionStatus)) {
             order.setPaymentStatus(PaymentStatus.PAID);
             order.setOrderEnum(OrderEnum.PENDING);
             orderRepository.save(order);
             billService.createBill(orderId);
-            return ResponseEntity.ok("Thanh toán thành công! Đơn hàng đã được cập nhật.");
+
+            response.put("status", "success");
+            response.put("message", "Thanh toán thành công! Đơn hàng đã được cập nhật.");
+            response.put("redirectUrl", "http://localhost:3000/product"); // URL chuyển hướng
+            return ResponseEntity.ok(response);
         } else {
             order.setPaymentStatus(PaymentStatus.UNPAID);
             order.setOrderEnum(OrderEnum.PENDING);
             orderRepository.save(order);
-            return ResponseEntity.badRequest().body("Thanh toán thất bại. Vui lòng thử lại!");
+
+            response.put("status", "failure");
+            response.put("message", "Thanh toán thất bại. Vui lòng thử lại!");
+            return ResponseEntity.badRequest().body(response);
         }
     }
 

@@ -88,7 +88,7 @@ public class OderImple implements OrderService{
                 .shippingMethod(ShipingEnum.valueOf(shippingMethod.toUpperCase()))
                 .items(new ArrayList<>())
                 .totalPrice(0.0)
-                .shippingFee(30000.0)
+                .shippingFee(0.0)
                 .orderEnum(OrderEnum.PENDING) 
                 .paymentStatus(PaymentStatus.UNPAID)
                 .build();
@@ -117,7 +117,7 @@ public class OderImple implements OrderService{
             productVariant.setStock(productVariant.getStock() - cartItem.getQuantity());
             productVariantReposi.save(productVariant);
         }
-        order.setTotalPrice(total + order.calculateShippingFee());
+        order.setTotalPrice(total);
         order.setShippingFee(order.calculateShippingFee());
         orderRepository.save(order);
 
