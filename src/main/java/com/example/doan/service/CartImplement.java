@@ -145,15 +145,47 @@ public class CartImplement implements CartService {
             .build();
     }
 
+//    @Override
+//    public CartDTO getCartByUserId(Long userId) {
+//        Cart cart = cartRepository.findById(userId).orElseThrow(() ->
+//            new RuntimeException("Không tìm thấy giỏ hàng của người dùng!")
+//        );
+//
+//        if (cart.getItems() == null) {
+//            cart.setItems(new ArrayList<>());
+//        }
+//
+//        return save(cart);
+//    }
+
     @Override
     public CartDTO getCartByUserId(Long userId) {
-        Cart cart = cartRepository.findById(userId).orElseThrow(() -> 
-            new RuntimeException("Không tìm thấy giỏ hàng của người dùng!")
-        );
-        if (cart.getItems() == null) {
-            cart.setItems(new ArrayList<>()); 
+        // Fetch the cart by userId
+        List<Cart> carts = cartRepository.findByUserId(userId);
+
+        if (carts.isEmpty()) {
+            // Log the absence of a cart
+            System.out.println("No cart found for userId: " + userId);
+
+            // Create and return an empty cart
+            Cart emptyCart = new Cart();
+            emptyCart.setUser(userRepository.findById(userId).orElseThrow(() ->
+                    new RuntimeException("User không tồn tại!")
+            ));
+            emptyCart.setItems(new ArrayList<>());
+            emptyCart.setTotalPrice(0.0);
+
+            // Save the empty cart to the database (optional)
+            cartRepository.save(emptyCart);
+
+            return save(emptyCart);
         }
-    
+
+        if (carts.size() > 1) {
+            throw new RuntimeException("Lỗi dữ liệu: Một user có nhiều giỏ hàng!");
+        }
+
+        Cart cart = carts.get(0);
         return save(cart);
     }
 
