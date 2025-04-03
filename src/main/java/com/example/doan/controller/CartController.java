@@ -26,30 +26,30 @@ public class CartController {
 
     @GetMapping("/")
     public ResponseEntity<CartDTO> getMyCart() {
-    Long userId = getCurrentUserId(); 
-    CartDTO cartDTO = cartService.getCartByUserId(userId);
-    return ResponseEntity.ok(cartDTO);
-}
-
-@PostMapping("/addProductToCart")
-public ResponseEntity<?> addProductToCart(@RequestBody CartItemDTO itemDTO) {
-    Long userId = getCurrentUserId(); 
-    CartDTO updatedCart = cartService.addProduct(
-        userId, 
-        itemDTO.getProductVariantId(), 
-        itemDTO.getQuantity(),
-        itemDTO.getPrice(),
-        itemDTO.getImageUrl()
-    );
-    return ResponseEntity.ok(updatedCart);
-}
-private Long getCurrentUserId() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null && authentication.getPrincipal() instanceof UserEntity user) {
-        return user.getId();
+        Long userId = getCurrentUserId();
+        CartDTO cartDTO = cartService.getCartByUserId(userId);
+        return ResponseEntity.ok(cartDTO);
     }
-    throw new RuntimeException("Người dùng chưa đăng nhập!");
-}
+
+    @PostMapping("/addProductToCart")
+    public ResponseEntity<?> addProductToCart(@RequestBody CartItemDTO itemDTO) {
+        Long userId = getCurrentUserId();
+        CartDTO updatedCart = cartService.addProduct(
+            userId,
+            itemDTO.getProductVariantId(),
+            itemDTO.getQuantity(),
+            itemDTO.getPrice(),
+            itemDTO.getImageUrl()
+        );
+        return ResponseEntity.ok(updatedCart);
+    }
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserEntity user) {
+            return user.getId();
+        }
+        throw new RuntimeException("Người dùng chưa đăng nhập!");
+    }
 // @PutMapping("/updateCartItemQuantity")
 //     public ResponseEntity<CartDTO> updateCartItemQuantity(@RequestBody CartItemDTO itemDTO) {
 //         Long userId = getCurrentUserId(); 
