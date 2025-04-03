@@ -1,8 +1,6 @@
 package com.example.doan.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,13 +47,32 @@ public class ProductController {
     }
 
     @GetMapping("/filterProduct")
-    public ResponseEntity<List<ProductDTO>> filterProduct(@RequestParam(required = false) String size,
-    @RequestParam(required = false) String color,
-    @RequestParam(required = false) Double minPrice,
-    @RequestParam(required = false) Double maxPrice
-    ){
-        List<ProductDTO> filteredProducts = productService.geProductDTOs(size, color, minPrice, maxPrice);
-        return ResponseEntity.ok(filteredProducts);
+    public ResponseEntity<Map<String, Object>> filterProduct(
+            @RequestParam(required = false) String size, // Kích thước sản phẩm
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) { // Đổi tên size thành pageSize
+
+        List<String> sizes = (size != null && !size.isEmpty())
+                ? Arrays.asList(size.split(","))
+                : null;
+
+        List<String> colors = (color != null && !color.isEmpty())
+                ? Arrays.asList(color.split(","))
+                : null;
+
+        Pageable pageable = PageRequest.of(page, pageSize); // Sử dụng pageSize thay vì size
+        Page<ProductDTO> productPage = productService.geProductDTOs(sizes, colors, minPrice, maxPrice, pageable);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalPages", productPage.getTotalPages());
+        response.put("totalElements", productPage.getTotalElements());
+        response.put("numberOfElements", productPage.getNumberOfElements());
+        response.put("products", productPage.getContent());
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/addProductNew")

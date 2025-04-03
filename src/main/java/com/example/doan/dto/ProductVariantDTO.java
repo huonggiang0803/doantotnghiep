@@ -1,5 +1,6 @@
 package com.example.doan.dto;
 
+import com.example.doan.entity.ProductVariant;
 import com.example.doan.status.ProductStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -39,4 +40,15 @@ public class ProductVariantDTO {
     private Double promotionalPrice;
 
     private ProductStatus productStatus;
+
+    public ProductVariantDTO(ProductVariant variant) {
+        this.size = variant.getSize();
+        this.color = variant.getColor();
+        this.material = variant.getMaterial();
+        this.price = variant.getPrice();
+        this.stock = variant.getStock();
+        this.discountPercentage = variant.getDiscountPercentage();
+        this.promotionalPrice = variant.getPromotionalPrice();
+        this.productStatus = variant.getProductStatus();
+    }
 }

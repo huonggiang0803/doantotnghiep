@@ -1,7 +1,11 @@
 package com.example.doan.dto;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.example.doan.entity.Product;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.constraints.DecimalMax;
@@ -15,6 +19,8 @@ import lombok.Data;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductDTO {
     private Long id;
     @NotBlank(message = "Tên sản phẩm không được để trống")
@@ -46,4 +52,19 @@ public class ProductDTO {
     private List<ProductVariantDTO> variants = new ArrayList<>();
     private Byte status;
 
+    public ProductDTO(Product product) {
+        this.id = product.getId();
+        this.productName = product.getProductName();
+        this.describe = product.getDescribe();
+        this.categoryId = product.getCategory() != null ? product.getCategory().getId() : null; // Lấy id từ category
+        this.brand = product.getBrand();
+        this.releaseDate = null; // Nếu bạn không có thuộc tính releaseDate trong Product, hãy xử lý phù hợp
+        this.imageUrl = null; // Nếu bạn không có thuộc tính imageUrl trong Product, hãy xử lý phù hợp
+        this.rating = product.getRating();
+        this.reviewCount = product.getReviewCount();
+        this.status = null; // Nếu bạn không có thuộc tính status trong Product, hãy xử lý phù hợp
+        this.variants = product.getVariants().stream()
+                .map(ProductVariantDTO::new) // Ánh xạ từng variant sang ProductVariantDTO
+                .collect(Collectors.toList());
+    }
 }

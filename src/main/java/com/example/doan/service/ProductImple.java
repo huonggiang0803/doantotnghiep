@@ -1,11 +1,11 @@
 package com.example.doan.service;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.example.doan.service.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +36,9 @@ public class ProductImple implements ProductService{
     private ProductImageRepository productImageRepository;
     @Autowired
     private ProductVariantReposi productVariantReposi;
+
+//    @Autowired
+//    private ProductMapper productMapper;
 //   @Override
 //
 //   public Long saveProduct(ProductDTO productDTO, MultipartFile imageFile) {
@@ -298,9 +301,12 @@ public Product getProductById(long id) {
 //        }
 //    }
     @Override
-    public List<ProductDTO> geProductDTOs(String size, String color, Double minPrice, Double maxPrice) {
-        List<Product> products = productRepository.findFilteredProducts(size, color, minPrice, maxPrice);
-        return converToDTOs(products);
+    public Page<ProductDTO> geProductDTOs(List<String> size, List<String> color, Double minPrice, Double maxPrice, Pageable pageable) {
+        // Sử dụng repository để lọc sản phẩm với phân trang
+        Page<Product> productPage = productRepository.findProductsByFilters(size, color, minPrice, maxPrice, pageable);
+
+        // Chuyển đổi từ Product sang ProductDTO
+        return productPage.map(product -> new ProductDTO(product));
     }
 
     public List<ProductDTO> converToDTOs(List<Product> products){

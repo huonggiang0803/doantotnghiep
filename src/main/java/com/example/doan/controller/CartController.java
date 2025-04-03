@@ -18,6 +18,9 @@ import com.example.doan.dto.CartItemDTO;
 import com.example.doan.entity.UserEntity;
 import com.example.doan.service.CartService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
@@ -35,13 +38,19 @@ public class CartController {
     public ResponseEntity<?> addProductToCart(@RequestBody CartItemDTO itemDTO) {
         Long userId = getCurrentUserId();
         CartDTO updatedCart = cartService.addProduct(
-            userId,
-            itemDTO.getProductVariantId(),
-            itemDTO.getQuantity(),
-            itemDTO.getPrice(),
-            itemDTO.getImageUrl()
+                userId,
+                itemDTO.getProductVariantId(),
+                itemDTO.getQuantity(),
+                itemDTO.getPrice(),
+                itemDTO.getImageUrl()
         );
-        return ResponseEntity.ok(updatedCart);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Thêm vào giỏ hàng thành công!");
+        response.put("cart", updatedCart);
+
+        return ResponseEntity.ok(response);
     }
     private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
