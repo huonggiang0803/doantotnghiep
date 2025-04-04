@@ -1,6 +1,7 @@
 package com.example.doan.controller;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class ProductController {
     public ResponseEntity<Map<String, Object>> getAllProducts(
         @RequestParam(value = "keyword", required = false) String keyword,
         @RequestParam(value = "page", defaultValue = "0") int page,
-        @RequestParam(value = "size", defaultValue = "1000") int size) {
+        @RequestParam(value = "pageSize", defaultValue = "1000") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = productService.findAll(keyword, pageable);
@@ -46,30 +47,68 @@ public class ProductController {
         return ResponseEntity.ok(listPage);
     }
 
+//    @GetMapping("/filterProduct")
+//    public ResponseEntity<Map<String, Object>> filterProduct(
+//            @RequestParam(required = false) String size, // Kích thước sản phẩm
+//            @RequestParam(required = false) String color,
+//            @RequestParam(required = false) Double minPrice,
+//            @RequestParam(required = false) Double maxPrice,
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) { // Đổi tên size thành pageSize
+//
+//        List<String> sizes = (size != null && !size.isEmpty())
+//                ? Arrays.asList(size.split(","))
+//                : null;
+//
+//        List<String> colors = (color != null && !color.isEmpty())
+//                ? Arrays.asList(color.toLowerCase().split(","))
+//                : null;
+//
+//        Pageable pageable = PageRequest.of(page, pageSize); // Sử dụng pageSize thay vì size
+//        Page<ProductDTO> productPage = productService.geProductDTOs(sizes, colors, minPrice, maxPrice, pageable);
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("totalPages", productPage.getTotalPages());
+//        response.put("totalElements", productPage.getTotalElements());
+//        response.put("numberOfElements", productPage.getNumberOfElements());
+//        response.put("products", productPage.getContent());
+//
+//        return ResponseEntity.ok(response);
+//    }
+
     @GetMapping("/filterProduct")
     public ResponseEntity<Map<String, Object>> filterProduct(
-            @RequestParam(required = false) String size, // Kích thước sản phẩm
+            @RequestParam(required = false) String price,
+            @RequestParam(required = false) String size,
             @RequestParam(required = false) String color,
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) { // Đổi tên size thành pageSize
+            @RequestParam(value = "pageSize", defaultValue = "8") int pageSize) {
 
         List<String> sizes = (size != null && !size.isEmpty())
                 ? Arrays.asList(size.split(","))
                 : null;
 
         List<String> colors = (color != null && !color.isEmpty())
-                ? Arrays.asList(color.split(","))
+                ? Arrays.asList(color.toLowerCase().split(","))
                 : null;
 
-        Pageable pageable = PageRequest.of(page, pageSize); // Sử dụng pageSize thay vì size
+        List<Double> priceRange = null;
+        if (price != null && !price.isEmpty()) {
+            priceRange = Arrays.stream(price.split(","))
+                    .map(Double::parseDouble)
+                    .collect(Collectors.toList());
+        }
+
+        // Sử dụng priceRange để lọc sản phẩm
+        Double minPrice = priceRange != null && priceRange.size() > 0 ? priceRange.get(0) : null;
+        Double maxPrice = priceRange != null && priceRange.size() > 1 ? priceRange.get(1) : null;
+
+        Pageable pageable = PageRequest.of(page, pageSize);
         Page<ProductDTO> productPage = productService.geProductDTOs(sizes, colors, minPrice, maxPrice, pageable);
 
         Map<String, Object> response = new HashMap<>();
         response.put("totalPages", productPage.getTotalPages());
         response.put("totalElements", productPage.getTotalElements());
-        response.put("numberOfElements", productPage.getNumberOfElements());
         response.put("products", productPage.getContent());
 
         return ResponseEntity.ok(response);
