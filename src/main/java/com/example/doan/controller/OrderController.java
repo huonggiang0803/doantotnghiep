@@ -44,18 +44,18 @@ public class OrderController {
         return ResponseEntity.ok(orderDTO);
     }
     @GetMapping("/getOrderHistory/{userId}")
-public ResponseEntity<List<OrderDTO>> getOrderHistory(@PathVariable Long userId) {
-    List<OrderDTO> orderHistory = orderService.getOrderHistoryByUser(userId);
-    return ResponseEntity.ok(orderHistory);
-}
-@PostMapping("/createBill/{orderId}")
-public ResponseEntity<?> generateBill(@PathVariable Long orderId) {
-    try {
-        Bill bill = billService.createBill(orderId);
-        return ResponseEntity.ok("Hóa đơn đã được tạo thành công!");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi: " + e.getMessage());
+    public ResponseEntity<List<OrderDTO>> getOrderHistory(@PathVariable Long userId) {
+        List<OrderDTO> orderHistory = orderService.getOrderHistoryByUser(userId);
+        return ResponseEntity.ok(orderHistory);
     }
-}
+    @PostMapping("/createBill/{orderId}")
+    public ResponseEntity<?> generateBill(@PathVariable Long orderId) {
+        try {
+            Bill bill = billService.createBill(orderId);
+            return ResponseEntity.ok("Hóa đơn đã được tạo thành công!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi: " + e.getMessage());
+        }
+    }
 
 }

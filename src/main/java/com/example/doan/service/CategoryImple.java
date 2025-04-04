@@ -2,7 +2,11 @@ package com.example.doan.service;
 
 import java.util.List;
 
+import com.example.doan.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,15 +16,20 @@ import com.example.doan.repository.CategoryRepository;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CategoryImple implements CategoryService{
     @Autowired
     private CategoryRepository categoryRepository;
 
+    private final ProductRepository productRepository;
+
     @Override
-    public List<Product> productCategory(Long id) {
+    public Page<Product> productCategory(Long id, Pageable pageable) {
         Category category = categoryRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Category not found"));
-        return category.getProducts();
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        // Sử dụng repository để phân trang sản phẩm
+        return productRepository.findByCategoryId(id, pageable);
     }
 
     @Override
