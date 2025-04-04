@@ -4,9 +4,11 @@ import java.util.List;
 
 import com.example.doan.entity.Category;
 import com.example.doan.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
-    List<Product> productCategory(Long categoryId);
+    Page<Product> productCategory(Long categoryId, Pageable pageable);
     List<Category> getAllCategory();
     Category addCategory(Category category);
     void deleteCategory(Long id);

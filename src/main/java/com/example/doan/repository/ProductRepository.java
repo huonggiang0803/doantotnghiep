@@ -33,4 +33,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("maxPrice") Double maxPrice,
             Pageable pageable);
     Page<Product> findByProductNameContainingIgnoreCaseAndIsDeleted(String productName, byte isDeleted, Pageable pageable);
+
+    Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
 }

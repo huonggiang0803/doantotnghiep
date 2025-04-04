@@ -3,6 +3,8 @@ package com.example.doan.controller;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.example.doan.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,12 +24,15 @@ import com.example.doan.service.ProductService;
 
 @RestController
 @RequestMapping("/api/products")
+@RequiredArgsConstructor
 public class ProductController {
 
     @Autowired
     private ProductService productService;
     @Autowired
     private CategoryService categoryService;
+
+    private final ProductRepository productRepository;
 
     @GetMapping("/get-all-product")
     public ResponseEntity<Map<String, Object>> getAllProducts(
@@ -127,9 +132,21 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
     @GetMapping("/getAllCategory/{id}")
-    public ResponseEntity<List<Product>> getAllCategory(@PathVariable Long id) {
-        List<Product> products = categoryService.productCategory(id);
-        return ResponseEntity.ok(products);
+    public ResponseEntity<Map<String, Object>> getAllCategory(
+            @PathVariable Long id,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "pageSize", defaultValue = "8") int pageSize
+    ) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Product> products = productRepository.findByCategoryId(id, pageable);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalElements", products.getTotalElements()); // Tổng số sản phẩm
+        response.put("totalPages", products.getTotalPages()); // Tổng số trang
+        response.put("numberOfElements", products.getSize()); // Số sản phẩm trên mỗi trang
+        response.put("products", products.getContent());
+
+        return ResponseEntity.ok(response);
     }
     @GetMapping("/getAll")
     public ResponseEntity<List<Category>> getAllCategories() {
