@@ -35,7 +35,6 @@ public class BillService {
             throw new RuntimeException("Bill for this order already exists!");
         }
 
-        // Kiểm tra xem đơn hàng có thông tin người dùng hay không
         if (order.getUserId() == null) {
             throw new RuntimeException("User not found for this order!");
         }
@@ -43,7 +42,6 @@ public class BillService {
         Bill bill = new Bill();
         bill.setOrder(order);
 
-        // Truyền toàn bộ đối tượng UserEntity
         bill.setUserEntity(order.getUserId());
 
         bill.setShipping(order.getInforShipping());
@@ -57,6 +55,7 @@ public class BillService {
             BillItem billItem = new BillItem();
             billItem.setBill(bill);
             billItem.setProductVariant(orderItem.getProduct());
+            
             billItem.setQuantity(orderItem.getQuantity());
             billItem.setPrice(orderItem.getPrice());
             billItem.setTotalPrice(orderItem.getSubTotal());

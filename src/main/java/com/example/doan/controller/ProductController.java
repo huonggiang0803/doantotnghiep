@@ -99,7 +99,6 @@ public class ProductController {
                     .collect(Collectors.toList());
         }
 
-        // Sử dụng priceRange để lọc sản phẩm
         Double minPrice = priceRange != null && priceRange.size() > 0 ? priceRange.get(0) : null;
         Double maxPrice = priceRange != null && priceRange.size() > 1 ? priceRange.get(1) : null;
 

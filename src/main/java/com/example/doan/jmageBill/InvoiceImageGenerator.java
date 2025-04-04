@@ -24,7 +24,7 @@ public class InvoiceImageGenerator {
         g2d.setColor(Color.BLACK);
         
         g2d.setFont(new Font("Arial", Font.BOLD, 18));
-        g2d.drawString("SHOP THỜI TRANG UNETIFASHION", 150, 40);
+        g2d.drawString("SHOP THỜI TRANG UNETI FASHION", 150, 40);
         g2d.setFont(new Font("Arial", Font.PLAIN, 14));
         g2d.drawString("Địa chỉ: HÀ NỘI", 150, 60);
         g2d.drawString("Hotline: 0123 456 789", 150, 80);
@@ -51,10 +51,9 @@ public class InvoiceImageGenerator {
         int y = tableStartY + 50;
         for (BillItem item : bill.getBillItems()) {
             String productName = item.getProductVariant().getProduct().getProductName();
-            int maxWidth = 180; // Chiều rộng tối đa của cột tên sản phẩm
+            int maxWidth = 180; 
             FontMetrics metrics = g2d.getFontMetrics();
 
-            // Xử lý cắt dòng cho tên sản phẩm
             int lineHeight = metrics.getHeight();
             int lineY = y;
             String[] words = productName.split(" ");
@@ -69,13 +68,16 @@ public class InvoiceImageGenerator {
                     line.append(word).append(" ");
                 }
             }
-            g2d.drawString(line.toString(), 60, lineY); // Vẽ dòng cuối cùng
-            y = Math.max(y, lineY) + 30; // Cập nhật vị trí Y cho dòng tiếp theo
+            g2d.drawString(line.toString(), 60, lineY); 
+            y = Math.max(y, lineY) + 30; 
 
-            // Vẽ các cột khác
-            g2d.drawString(String.format("%,.0f VND", item.getProductVariant().getPrice()), 250, y - 30);
-            g2d.drawString(String.valueOf(item.getQuantity()), 390, y - 30);
-            g2d.drawString(String.format("%,.0f VND", item.getTotalPrice()), 470, y - 30);
+            // g2d.drawString(String.format("%,.0f VND", item.getProductVariant().getPromotionalPrice()), 250, y - 30);
+            double price = item.getPrice(); // Giá từ Order (có thể đã tính khuyến mãi)
+g2d.drawString(String.format("%,.2f VND", price), 250, y - 30);
+
+g2d.drawString(String.valueOf(item.getQuantity()), 390, y - 30);
+g2d.drawString(String.format("%,.2f VND", item.getTotalPrice()), 470, y - 30);
+
         }
  
         g2d.drawLine(50, y, 550, y);
