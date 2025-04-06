@@ -86,7 +86,7 @@ public class UserServiceImplement implements UserService{
             String obj = "CHÀO MỪNG BẠN ĐẾN VỚI THẾ GIỚI MUA SẮM!";
             String body = "<p>Xin chào " + user.getFullName() + ",</p>"
             + "<p>Cảm ơn bạn đã đăng kí tài khoản tại hệ thống chúng tôi. Chúng tôi hoan nghênh khi có bạn đồng hành cùng chúng tôi!</p>"
-            + "<p>Chúc bạn có trải nghiệm tuyệt vời khi mua sắm tại <b>FashionMod</b> chúng tôi!</p>"
+            + "<p>Chúc bạn có trải nghiệm tuyệt vời khi mua sắm tại <b>UNET FASHION</b> chúng tôi!</p>"
             + "<p>Trân trọng!</p>";
 
             emailService.sendEmail(user.getEmail(), obj, body);
