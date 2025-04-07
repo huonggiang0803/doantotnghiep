@@ -49,7 +49,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .fullName(fullName)
                     .gender(gender)
                     .email(email)
-                    .passWord("")  
+                    .password("")
                     .type(UserType.USER)
                     .is_deleted((byte) 0)
                     .build();

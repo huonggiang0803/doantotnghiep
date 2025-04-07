@@ -11,14 +11,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.doan.dto.ForgotPasswordDTO;
@@ -36,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 public class RegisterUserController {
     @Autowired
     private UserService us;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/user")
     public String showRegisterForm() {
@@ -43,22 +39,68 @@ public class RegisterUserController {
     }
     @GetMapping("/getAllUsers")
     public ResponseEntity<List<UserEntity>> getAllUsers(@AuthenticationPrincipal UserEntity currentUser) {
-    if (currentUser == null || currentUser.getType() != UserType.ADMIN) {
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền xem danh sách người dùng!");
+        if (currentUser == null || currentUser.getType() != UserType.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền xem danh sách người dùng!");
+        }
+        List<UserEntity> users = us.getAllUsers();
+        return ResponseEntity.ok(users);
     }
-    List<UserEntity> users = us.getAllUsers();
-    return ResponseEntity.ok(users);
-}
 
-@PostMapping("/registerUser")
-public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterDTOUser dto, @AuthenticationPrincipal UserEntity currentUser) {
-    try {
-        String result = us.saveUser(dto, currentUser);
-        return ResponseEntity.ok(result);
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    @GetMapping("/profile")
+    public ResponseEntity<UserEntity> getProfile(@AuthenticationPrincipal UserEntity currentUser) {
+        if (currentUser == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bạn chưa đăng nhập!");
+        }
+        return ResponseEntity.ok(currentUser);
     }
-}
+
+    @PutMapping("/updateProfile")
+    public ResponseEntity<String> updateProfile(@Valid @RequestBody UserEntity updatedUser, @AuthenticationPrincipal UserEntity currentUser) {
+        if (currentUser == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bạn chưa đăng nhập!");
+        }
+
+        if (!currentUser.getId().equals(updatedUser.getId())) {
+            throw new IllegalArgumentException("Bạn không thể chỉnh sửa thông tin của người dùng khác!");
+        }
+
+        currentUser.setFullName(updatedUser.getFullName());
+        currentUser.setEmail(updatedUser.getEmail());
+        currentUser.setAddess(updatedUser.getAddess());
+        currentUser.setDateOfBirth(updatedUser.getDateOfBirth());
+        currentUser.setPhone(updatedUser.getPhone());
+        currentUser.setGender(updatedUser.getGender());
+
+        us.save(currentUser); // Lưu thông tin người dùng
+        return ResponseEntity.ok("Cập nhật thông tin thành công!");
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<String> changePassword(
+            @RequestBody Map<String, String> passwordData,
+            @AuthenticationPrincipal UserEntity currentUser) {
+        String oldPassword = passwordData.get("oldPassword");
+        String newPassword = passwordData.get("newPassword");
+
+        if (!passwordEncoder.matches(oldPassword, currentUser.getPassword())) {
+            throw new IllegalArgumentException("Mật khẩu cũ không chính xác!");
+        }
+
+        currentUser.setPassword(passwordEncoder.encode(newPassword));
+        us.save(currentUser);
+
+        return ResponseEntity.ok("Đổi mật khẩu thành công!");
+    }
+
+    @PostMapping("/registerUser")
+    public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterDTOUser dto, @AuthenticationPrincipal UserEntity currentUser) {
+        try {
+            String result = us.saveUser(dto, currentUser);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
     @PostMapping("/loginUser")
     public ResponseEntity<Map<String, String>> loginUser(@Valid @RequestBody LoginDTO dto) {
@@ -99,16 +141,40 @@ public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterDTOUser d
         String response = us.resetPassword(email, newPassword);
         return ResponseEntity.ok(response);
     }
-   @DeleteMapping("/deleteUser/{id}")
+    @DeleteMapping("/deleteUser/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable long id) {
-    // Lấy thông tin người dùng hiện tại từ SecurityContext
-    UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    UserEntity currentUser = us.findByUsername(userDetails.getUsername()); 
+        // Lấy thông tin người dùng hiện tại từ SecurityContext
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserEntity currentUser = us.findByUsername(userDetails.getUsername());
 
-    if (currentUser.getType() != UserType.ADMIN) {
-        throw new AccessDeniedException("Bạn không có quyền xóa người dùng!");
+        if (currentUser.getType() != UserType.ADMIN) {
+            throw new AccessDeniedException("Bạn không có quyền xóa người dùng!");
+        }
+        us.deleteUser(id, currentUser);
+        return ResponseEntity.ok("Tài khoản đã bị vô hiệu hóa");
     }
-    us.deleteUser(id, currentUser);
-    return ResponseEntity.ok("Tài khoản đã bị vô hiệu hóa");
-}
+
+    @PutMapping("/updateUser/{id}")
+    public ResponseEntity<String> updateUser(
+            @PathVariable long id,
+            @Valid @RequestBody UserEntity updatedUser,
+            @AuthenticationPrincipal UserEntity currentUser) {
+        if (currentUser.getType() != UserType.ADMIN) {
+            throw new AccessDeniedException("Bạn không có quyền chỉnh sửa thông tin người dùng!");
+        }
+
+        UserEntity user = us.findById(id);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Người dùng không tồn tại!");
+        }
+
+        // Cập nhật các trường được phép
+        user.setFullName(updatedUser.getFullName());
+        user.setPhone(updatedUser.getPhone());
+        user.setDateOfBirth(updatedUser.getDateOfBirth());
+        user.setIs_deleted(updatedUser.getIs_deleted()); // Cập nhật trạng thái
+
+        us.save(user);
+        return ResponseEntity.ok("Cập nhật thông tin người dùng thành công!");
+    }
 }

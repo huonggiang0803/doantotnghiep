@@ -174,7 +174,7 @@ public class ProductController {
     public ResponseEntity<String> updateProduct(
             @PathVariable Long id,
             @ModelAttribute ProductDTO productDTO,
-            @RequestParam("photos") List<MultipartFile> imageFiles) {
+            @RequestParam(value = "photos", required = false) List<MultipartFile> imageFiles) {
         try {
             productService.updateProduct(id, productDTO, imageFiles);
             return ResponseEntity.ok("Sản phẩm đã được cập nhật thành công!");

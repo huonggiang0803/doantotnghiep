@@ -12,7 +12,9 @@ public interface UserService {
     void deleteUser(long id, UserEntity currentUser);
     UserEntity findByUsername(String username) ;
     List<UserEntity> getAllUsers();
-    public String resetPassword(  String email,String newPassword) ;
-    public String xacMinhOtp(String email, String otp);
-    public UserEntity save(UserEntity user);
+    String resetPassword(  String email,String newPassword) ;
+    String xacMinhOtp(String email, String otp);
+    UserEntity save(UserEntity user);
+    String changePassword(UserEntity currentUser, String oldPassword, String newPassword);
+    UserEntity findById(long id);
 }

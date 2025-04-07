@@ -72,7 +72,7 @@ public class UserServiceImplement implements UserService{
         UserEntity user = UserEntity.builder()
         .userName(userRequestDTO.getUserName())
         .fullName(userRequestDTO.getFullName())
-        .passWord(passwordEncoder.encode(userRequestDTO.getPassWord()))
+        .password(passwordEncoder.encode(userRequestDTO.getPassWord()))
         .addess(userRequestDTO.getAddress())
         .email(userRequestDTO.getEmail())
         .dateOfBirth(userRequestDTO.getDateOfBirth())
@@ -195,7 +195,7 @@ public void deleteUser(long id, UserEntity currentUser) {
             return "Email không tồn tại!";
         }
         UserEntity user = userOpt.get();
-        user.setPassWord(passwordEncoder.encode(newPassword));
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         
         return "Mật khẩu đã được thay đổi thành công!";
@@ -205,5 +205,20 @@ public void deleteUser(long id, UserEntity currentUser) {
         return userRepository.save(user);
     }
 
+    @Override
+    public String changePassword(UserEntity currentUser, String oldPassword, String newPassword) {
+        if (!passwordEncoder.matches(oldPassword, currentUser.getPassword())) {
+            throw new IllegalArgumentException("Mật khẩu cũ không chính xác!");
+        }
 
+        currentUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(currentUser);
+        return "Đổi mật khẩu thành công!";
+    }
+
+    @Override
+    public UserEntity findById(long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Người dùng không tồn tại!"));
+    }
 }

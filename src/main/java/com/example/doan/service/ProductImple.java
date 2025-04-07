@@ -215,13 +215,13 @@ public Product getProductById(long id) {
                     .stock(variantDTO.getStock())
                     .discountPercentage(variantDTO.getDiscountPercentage())
                     .promotionalPrice(variantDTO.getPromotionalPrice())
-                    .productStatus(variantDTO.getStock() > 0 ? ProductStatus.AVAILABLE : ProductStatus.OUT_OF_STOCK) // Gán giá trị mặc định
+                    .productStatus(variantDTO.getStock() > 0 ? ProductStatus.AVAILABLE : ProductStatus.OUT_OF_STOCK)
                     .build();
             variantEntities.add(variant);
         }
         productVariantReposi.saveAll(variantEntities);
 
-        // Cập nhật danh sách ảnh
+        // Cập nhật danh sách ảnh nếu có ảnh mới
         if (imageFiles != null && !imageFiles.isEmpty()) {
             List<ProductImage> imageEntities = new ArrayList<>();
             for (MultipartFile imageFile : imageFiles) {
