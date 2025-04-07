@@ -70,14 +70,14 @@ public class Orders extends AbstractEntity{
         this.shippingFee = calculateShippingFee();
     }
     public Double calculateShippingFee() {
-        if (this.shippingMethod == null) return 30000.0;
+        if (this.shippingMethod == null) return 0.0;
         switch (this.shippingMethod) {
             case STANDARD:
-                return 30000.0; 
+                return 15000.0;
             case EXPRESS:
-                return 50000.0; 
+                return 30000.0;
             case SAME_DAY:
-                return 70000.0; 
+                return 50000.0;
             default:
                 return 0.0;
         }
