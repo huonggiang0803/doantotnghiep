@@ -23,7 +23,6 @@ public class CartDTO {
             cartItem.setId(cartItemDTO.getId());
             cartItem.setQuantity(cartItemDTO.getQuantity());
 
-            // Tạo ProductVariant và gán dữ liệu
             ProductVariant productVariant = new ProductVariant();
             productVariant.setId(cartItemDTO.getProductVariantId());
             productVariant.setPrice(cartItemDTO.getPrice());

@@ -98,7 +98,7 @@ public class OderImple implements OrderService{
         double total = 0.0;
         for (CartItem cartItem : cartItems) {
             ProductVariant productVariant = cartItem.getProductVariant();
-            double finalPrice = productVariant.getFinalPrice();
+            double finalPrice = (cartItem.getPrice() != null) ? cartItem.getPrice() : productVariant.getFinalPrice();
 
             if (productVariant.getStock() < cartItem.getQuantity()) {
                 throw new RuntimeException("Sản phẩm hết hàng");
