@@ -186,4 +186,19 @@ public class OderImple implements OrderService{
 
         return order;
     }
+
+    @Override
+    public UserEntity getUserById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
+    @Override
+    public Orders getOrderById(Long orderId) {
+        return orderRepository.findById(orderId).orElse(null);
+    }
+
+    @Override
+    public void saveOrder(Orders order) {
+        orderRepository.save(order);
+    }
 }

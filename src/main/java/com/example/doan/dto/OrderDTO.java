@@ -13,6 +13,7 @@ import lombok.Setter;
 public class OrderDTO {
     private Long id;
     private Long customerId;
+    private String customerName;
     private Double totalPrice;
     private Double shippingFee;
     private ShipingEnum shippingMethod;
