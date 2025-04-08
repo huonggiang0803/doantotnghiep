@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserStatisticsDTO {
-    private String timePeriod;
-    private Long userCount;
+    private String label;  // có thể là ngày, tháng, quý, năm
+    private long count; 
 }
