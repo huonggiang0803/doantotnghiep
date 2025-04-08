@@ -38,7 +38,8 @@ public class WebSecurityConfig {
             .requestMatchers("/product-photo/**").permitAll() 
             .requestMatchers("/api/bills/**").permitAll()
             .requestMatchers("/auth/**").authenticated()
-            .anyRequest().authenticated()
+            .requestMatchers("/api/statistics/revenue/**").hasRole("ADMIN")
+                            .anyRequest().authenticated()
             
             );
 
