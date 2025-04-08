@@ -221,7 +221,7 @@ public Product getProductById(long id) {
         }
         productVariantReposi.saveAll(variantEntities);
 
-        // Cập nhật danh sách ảnh
+        // Cập nhật danh sách ảnh nếu có ảnh mới
         if (imageFiles != null && !imageFiles.isEmpty()) {
             List<ProductImage> imageEntities = new ArrayList<>();
             for (MultipartFile imageFile : imageFiles) {

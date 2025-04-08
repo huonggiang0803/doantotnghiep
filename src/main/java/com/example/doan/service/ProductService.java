@@ -16,7 +16,7 @@ public interface ProductService {
     void deleteProductByID(long id);
     List<Product> getAllProduct(String keyword);
     Page<Product> findPaginated(int pageNo, int pageSize, String sortFileld, String sortDir);
-    public void updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> photos);
+    void updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> photos);
     Page<ProductDTO> geProductDTOs(List<String> size, List<String> color, Double minPrice, Double maxPrice, Pageable pageable);
     List<ProductImage> getProductImages(long productId);
     void addImagesToProduct(Long productId, List<MultipartFile> imageFiles) ;

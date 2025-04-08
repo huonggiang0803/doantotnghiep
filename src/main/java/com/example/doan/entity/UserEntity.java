@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,7 +38,7 @@ import lombok.Setter;
     @Column(name = "fullname")
     private String fullName;
     @Column(name = "password")
-    private String passWord;
+    private String password;
     @Column(name = "address")
     private String addess;
     @Column(name = "email", unique = true)
@@ -59,17 +60,17 @@ import lombok.Setter;
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private UserType type;
-    @Column(name = "fullname")
     
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
       List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(new SimpleGrantedAuthority("ROLE_" + type.name())); 
+      authorities.add(new SimpleGrantedAuthority("ROLE_" + type.name()));
     return authorities;
     }
     @Override
     public String getPassword() {
-      return passWord;
+      return password;
     }
     @Override
     public String getUsername() {

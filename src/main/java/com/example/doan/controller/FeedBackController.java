@@ -41,11 +41,11 @@ public class FeedBackController {
         FeedBackDTO createdFeedback = feedBackService.addFeedback(userId, productId, files, feedbackText, rating);
         return ResponseEntity.ok(createdFeedback);
     }
-@GetMapping("/product/{productId}")
-public ResponseEntity<List<FeedBackDTO>> getFeedbackByProduct(@PathVariable Long productId) {
-    List<FeedBackDTO> feedbacks = feedBackService.getFeedbackByProductId(productId);
-    return ResponseEntity.ok(feedbacks);
-}
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<List<FeedBackDTO>> getFeedbackByProduct(@PathVariable Long productId) {
+        List<FeedBackDTO> feedbacks = feedBackService.getFeedbackByProductId(productId);
+        return ResponseEntity.ok(feedbacks);
+    }
 
     private Long getCurrentUserId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
