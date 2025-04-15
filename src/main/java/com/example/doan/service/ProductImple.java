@@ -159,7 +159,6 @@ public class ProductImple implements ProductService{
     }
     @Override
 public Product getProductById(long id) {
-    System.out.println("Tìm sản phẩm với ID: " + id);
     return productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException(" Không tìm thấy sản phẩm với ID: " + id));
 }
