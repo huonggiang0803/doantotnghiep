@@ -1,13 +1,10 @@
 package com.example.doan.dto;
 
-import com.example.doan.status.EnumPattern;
 import com.example.doan.status.EnumValue;
 import com.example.doan.status.GenderEnum;
 import com.example.doan.status.GenderSubset;
-import com.example.doan.status.UserStatus;
 import com.example.doan.status.UserType;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -19,7 +16,7 @@ import lombok.Data;
 
 @Data
 public class RegisterDTOUser {
-    @NotBlank(message = "username must be not null")
+    @NotBlank(message = "tên đăng nhập không được để trống")
     private String userName;
 
     @NotBlank(message = "Họ và tên không được để trống")
@@ -38,7 +35,10 @@ public class RegisterDTOUser {
     private String address;
 
     @NotBlank(message = "Email không được để trống")
-    @Email(message = "Email không hợp lệ")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            message = "Email không hợp lệ. Vui lòng nhập đúng định dạng."
+    )
     private String email;
 
     @Past(message = "Ngày sinh phải là một ngày trong quá khứ")
