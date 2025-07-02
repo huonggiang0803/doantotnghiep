@@ -1,5 +1,14 @@
-Đồ án tốt nghiệp: Xây dựng website thương mại điện tử tích hợp chatbot AI hỗ trợ khách hàng. Hệ thống gồm frontend, backend và AI chatbot.
-Mục tiêu của đồ án là xây dựng một hệ thống thương mại điện tử hoàn chỉnh, cho phép người dùng mua sắm trực tuyến và nhận hỗ trợ từ chatbot AI tích hợp. Dự án tập trung vào việc kết hợp giữa trải nghiệm người dùng (UX) hiện đại và nền tảng backend mạnh mẽ, bảo mật, dễ mở rộng.
+Giới thiệu:
+
+Đồ án tốt nghiệp: Đồ án tốt nghiệp: Website thương mại điện tử và ứng dụng AI trong tương tác khách hàng.
+Thành phần hệ thống:
+  Gồm 3 phần chính: Frontend, Backend, AI Chatbot.
+Mục tiêu:  
+Tạo ra một nền tảng thương mại điện tử hoàn chỉnh, cho phép người dùng:
+- Mua sắm trực tuyến tiện lợi
+- Được hỗ trợ tức thì thông qua chatbot AI
+- Trải nghiệm giao diện người dùng hiện đại (UX tốt)
+- Sử dụng hệ thống có backend bảo mật, dễ mở rộng và triển khai trên cloud
 
 Docker Hub
 
