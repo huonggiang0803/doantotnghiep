@@ -1,8 +1,10 @@
 Giới thiệu:
-
 Đồ án tốt nghiệp: Đồ án tốt nghiệp: Website thương mại điện tử và ứng dụng AI trong tương tác khách hàng.
+
 Thành phần hệ thống:
+
   Gồm 3 phần chính: Frontend, Backend, AI Chatbot.
+  
 Mục tiêu:  
 Tạo ra một nền tảng thương mại điện tử hoàn chỉnh, cho phép người dùng:
 - Mua sắm trực tuyến tiện lợi
