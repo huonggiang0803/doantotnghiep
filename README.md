@@ -9,8 +9,8 @@ Mục tiêu:
 Tạo ra một nền tảng thương mại điện tử hoàn chỉnh, cho phép người dùng:
 - Mua sắm trực tuyến tiện lợi
 - Được hỗ trợ tức thì thông qua chatbot AI
-- Trải nghiệm giao diện người dùng hiện đại (UX tốt)
-- Sử dụng hệ thống có backend bảo mật, dễ mở rộng và triển khai trên cloud
+- Trải nghiệm giao diện người dùng hiện đại
+- Sử dụng hệ thống có backend bảo mật, dễ mở rộng
 
 Docker Hub
 
