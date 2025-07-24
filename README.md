@@ -16,3 +16,4 @@ Docker Hub
 
 Backend: [`nguyenhuonggiang/doantotnghiep-backend`](https://hub.docker.com/repository/docker/nguyenhuonggiang/doantotnghiep-frontend/general)
 Frontend:  [`nguyenhuonggiang/doantotnghiep-frontend`](https://hub.docker.com/repository/docker/nguyenhuonggiang/doantotnghiep-backend/general)
+Chatbot:  [`nguyenhuonggiang/doantotnghiep-chatbot`](https://hub.docker.com/repository/docker/nguyenhuonggiang/doantotnghiep-chatbot/general)
