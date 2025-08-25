@@ -39,6 +39,9 @@ public class WebSecurityConfig {
             .requestMatchers("/data/**").permitAll()
             .requestMatchers("/api/bills/**").permitAll()
             .requestMatchers("/auth/**").authenticated()
+			.requestMatchers("/v3/api-docs/**",
+									"/swagger-ui/**"
+				            ).permitAll()
             .requestMatchers("/api/statistics/revenue/**").hasRole("ADMIN")
                             .anyRequest().authenticated()
             
